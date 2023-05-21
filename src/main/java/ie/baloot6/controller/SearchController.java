@@ -23,20 +23,21 @@ SearchController {
 
     @GetMapping("/api/search")
     public List<Commodity> search(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam(SEARCH_BY) String searchBy, @RequestParam(QUERY) String query) {
-        if(sessionManager.isValidToken(authToken)) {
-            if(searchBy.equals(CATEGORY)) {
-                return repository.getCommodityList().stream().filter(
-                        commodity -> commodity.getCategories().contains(query)
-                ).toList();
-            }
-            if(searchBy.equals(NAME)) {
-                return repository.getCommodityList().stream().filter(
-                        commodity -> commodity.getName().contains(query)
-                ).toList();
-            }
-            throw new InvalidRequestParamsException("Invalid search-by parameter");
-        }
-        throw new InvalidValueException("Authentication token invalid");
+//        if(sessionManager.isValidToken(authToken)) {
+//            if(searchBy.equals(CATEGORY)) {
+//                return repository.getCommodityList().stream().filter(
+//                        commodity -> commodity.getCategories().contains(query)
+//                ).toList();
+//            }
+//            if(searchBy.equals(NAME)) {
+//                return repository.getCommodityList().stream().filter(
+//                        commodity -> commodity.getName().contains(query)
+//                ).toList();
+//            }
+//            throw new InvalidRequestParamsException("Invalid search-by parameter");
+//        }
+//        throw new InvalidValueException("Authentication token invalid");
+        return null;
     }
 
 

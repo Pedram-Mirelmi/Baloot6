@@ -102,7 +102,7 @@ public class ShoppingController {
                 User user = sessionManager.getUser(authToken).get();
                 float discount = 1.0F;
                 if(discountCode.isPresent() && repository.getDiscount(discountCode.get()).isPresent()) {
-                    discount = repository.getDiscount(discountCode.get()).get().getDiscount() / 100F;
+                    discount = repository.getDiscount(discountCode.get()).get().getDiscountAmount() / 100F;
                 }
                 repository.purchase(user.getUsername(), discount);
                 return Map.of(STATUS, SUCCESS);
@@ -120,7 +120,7 @@ public class ShoppingController {
         if(sessionManager.isValidToken(authToken)) {
                 Optional<Discount> discount = repository.getDiscount(discountCode);
                 return discount.isPresent() ?
-                        Map.of(CODE_STATUS, VALID, DISCOUNT, String.valueOf(discount.get().getDiscount())) :
+                        Map.of(CODE_STATUS, VALID, DISCOUNT, String.valueOf(discount.get().getDiscountAmount())) :
                         Map.of(CODE_STATUS, INVALID);
         }
         throw new InvalidValueException("Authentication token invalid");

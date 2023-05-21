@@ -1,17 +1,36 @@
 package ie.baloot6.model;
 
 import com.google.gson.annotations.SerializedName;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "discounts")
 public class Discount {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long discountId;
+
     @SerializedName("discountCode")
     private String discountCode;
 
     @SerializedName("discount")
-    private int discount;
+    private int discountAmount;
 
-    public Discount(String discountCode, int discount) {
+    public Discount(String discountCode, int discountAmount) {
         this.discountCode = discountCode;
-        this.discount = discount;
+        this.discountAmount = discountAmount;
+    }
+
+    public Discount() {
+
+    }
+
+    public long getDiscountId() {
+        return discountId;
+    }
+
+    public void setDiscountId(long discountId) {
+        this.discountId = discountId;
     }
 
     public String getDiscountCode() {
@@ -22,11 +41,11 @@ public class Discount {
         this.discountCode = discountCode;
     }
 
-    public int getDiscount() {
-        return discount;
+    public int getDiscountAmount() {
+        return discountAmount;
     }
 
-    public void setDiscount(int discount) {
-        this.discount = discount;
+    public void setDiscountAmount(int discount) {
+        this.discountAmount = discount;
     }
 }

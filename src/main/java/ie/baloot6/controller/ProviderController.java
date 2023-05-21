@@ -4,7 +4,7 @@ import ie.baloot6.data.IRepository;
 import ie.baloot6.data.ISessionManager;
 import ie.baloot6.exception.InvalidIdException;
 import ie.baloot6.exception.InvalidValueException;
-import ie.baloot6.model.CommodityDTO;
+import ie.baloot6.DTO.CommodityDTO;
 import ie.baloot6.model.Provider;
 import ie.baloot6.model.User;
 import org.springframework.web.bind.annotation.*;
@@ -43,8 +43,8 @@ public class ProviderController {
             User user = sessionManager.getUser(authToken).get();
             return repository.getProvidersCommoditiesList(providerId).stream().map(
                     commodity -> new CommodityDTO(commodity,
-                            repository.getInShoppingListCount(user.getUsername(), commodity.getId()),
-                            repository.getCommodityRateCount(commodity.getId()),
+                            repository.getInShoppingListCount(user.getUsername(), commodity.getCommodityId()),
+                            repository.getCommodityRateCount(commodity.getCommodityId()),
                             repository.getProvider(providerId).get().getName())
 
             ).toList();

@@ -6,6 +6,7 @@ import ie.baloot6.exception.NotEnoughAmountException;
 import ie.baloot6.model.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,17 +16,18 @@ public interface IRepository {
 
     void addComment(@NotNull String username, long commodityId, @NotNull String commentText) throws IllegalArgumentException;
 
-    void addUser(@NotNull User user) throws InvalidIdException;
+    void addUser(String username, String password, String email, Date birthDate, String address, long credit) throws InvalidIdException;
 
     Optional<User> getUser(@NotNull String username);
 
-    void addProvider(@NotNull Provider provider) throws InvalidIdException;
+
+    void addProvider(@NotNull String name, long providerId) throws InvalidIdException;
 
     Optional<Provider> getProvider(long id);
 
-    void addCommodity(@NotNull Commodity commodity) throws InvalidIdException;
+    void addCommodity(long commodityId, String name, long providerId, long price, long inStock) throws InvalidIdException;
 
-    void addDiscount(Discount discount);
+    void addDiscount(@NotNull String discountCode, int discountAmount);
 
     List<Commodity> getCommodityList();
 

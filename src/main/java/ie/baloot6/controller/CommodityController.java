@@ -6,9 +6,9 @@ import ie.baloot6.exception.InvalidIdException;
 import ie.baloot6.exception.InvalidRequestParamsException;
 import ie.baloot6.exception.InvalidValueException;
 import ie.baloot6.model.Commodity;
-import ie.baloot6.model.CommodityDTO;
+import ie.baloot6.DTO.CommodityDTO;
 import ie.baloot6.model.User;
-import ie.baloot6.model.RateDTO;
+import ie.baloot6.DTO.RateDTO;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,8 +60,8 @@ public class CommodityController {
                 User user = sessionManager.getUser(authToken).get();
                 var stream = result.stream().map(
                         commodity -> new CommodityDTO(commodity,
-                                repository.getInShoppingListCount(user.getUsername(), commodity.getId()),
-                                repository.getCommodityRateCount(commodity.getId()),
+                                repository.getInShoppingListCount(user.getUsername(), commodity.getCommodityId()),
+                                repository.getCommodityRateCount(commodity.getCommodityId()),
                                 repository.getProvider(commodity.getProviderId()).get().getName())
                 );
                 if (onlyAvailable) {
@@ -97,8 +97,8 @@ public class CommodityController {
                 var recommendeds = repository.getRecommendedCommodities(user.getUsername(), commodityId);
                 return repository.getRecommendedCommodities(user.getUsername(), commodityId).stream().map(
                         commodity -> new CommodityDTO(commodity,
-                                repository.getInShoppingListCount(user.getUsername(), commodity.getId()),
-                                repository.getCommodityRateCount(commodity.getId()),
+                                repository.getInShoppingListCount(user.getUsername(), commodity.getCommodityId()),
+                                repository.getCommodityRateCount(commodity.getCommodityId()),
                                 repository.getProvider(commodity.getProviderId()).get().getName())
 
                 ).toList();

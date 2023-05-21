@@ -1,4 +1,4 @@
-package ie.baloot6.model;
+package ie.baloot6.DTO;
 
 public class RateDTO {
     private final float rating;

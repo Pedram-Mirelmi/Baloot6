@@ -11,6 +11,7 @@ import ie.baloot6.model.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -53,10 +54,10 @@ public class AuthController {
             String username = Objects.requireNonNull(body.get(USERNAME));
             String password = Objects.requireNonNull(body.get(PASSWORD));
             String email = Objects.requireNonNull(body.get(EMAIL));
-            String birthDate = Objects.requireNonNull(body.get(BIRTHDATE));
+            Date birthDate = Date.valueOf(body.get(BIRTHDATE));
             String address = Objects.requireNonNull(body.get(ADDRESS));
 
-            repository.addUser(new User(username, password, email, birthDate, address, 0));
+            repository.addUser(username, password, email, birthDate, address, 0);
             String authToken = sessionManager.addSession(username, password);
             return Map.of(STATUS, SUCCESS,
                     AUTH_TOKEN, authToken);

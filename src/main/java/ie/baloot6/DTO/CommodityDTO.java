@@ -1,4 +1,6 @@
-package ie.baloot6.model;
+package ie.baloot6.DTO;
+
+import ie.baloot6.model.Commodity;
 
 public class CommodityDTO extends Commodity {
     final private long inCart;

@@ -2,31 +2,49 @@ package ie.baloot6.model;
 
 
 import com.google.gson.annotations.SerializedName;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
+import java.sql.Date;
+
+@Entity
+@Table(name = "providers")
 public class Provider {
+
+    @Id
     @SerializedName("id")
-    private long id;
+    private long providerId;
+
+
+    @Column(nullable = false)
     @SerializedName("name")
     private String name;
-    @SerializedName("registryDate")
-    private String registryDate;
 
-    public Provider(long id, String name, String registryDate) {
-        this.id = id;
+    @Column(nullable = false)
+    @SerializedName("registryDate")
+    private Date registryDate;
+
+    public Provider(String name, Date registryDate) {
         this.name = name;
         this.registryDate = registryDate;
     }
 
     public Provider(Provider provider) {
-        this(provider.id, provider.name, provider.registryDate);
+        this(provider.name, provider.registryDate);
+        this.providerId = provider.providerId;
     }
 
-    public long getId() {
-        return id;
+    public Provider() {
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public long getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(long id) {
+        this.providerId = id;
     }
 
     public String getName() {
@@ -37,11 +55,11 @@ public class Provider {
         this.name = name;
     }
 
-    public String getRegistryDate() {
+    public java.util.Date getRegistryDate() {
         return registryDate;
     }
 
-    public void setRegistryDate(String registryDate) {
+    public void setRegistryDate(Date registryDate) {
         this.registryDate = registryDate;
     }
 
@@ -50,7 +68,7 @@ public class Provider {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Provider provider = (Provider) o;
-        return id == provider.id && name.equals(provider.name) && registryDate.equals(provider.registryDate);
+        return providerId == provider.providerId && name.equals(provider.name) && registryDate.equals(provider.registryDate);
     }
 
 }

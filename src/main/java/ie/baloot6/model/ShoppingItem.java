@@ -1,61 +1,73 @@
 package ie.baloot6.model;
 
+import jakarta.persistence.*;
+
 import java.util.List;
 
+@Entity
+@Table(name = "shoppingItems")
 public class ShoppingItem {
-    final private long commodityId;
-    final private String commodityName;
-    final private long providerId;
-    final private long count;
-    final private long price;
-    final private List<String> categories;
-    final private long inStock;
-    final private float rating;
 
-    public ShoppingItem(Commodity commodity, long count) {
-        this.commodityId = commodity.getId();
-        this.price = commodity.getPrice();
-        this.categories = commodity.getCategories();
-        this.providerId = commodity.getProviderId();
-        this.commodityName = commodity.getName();
-        this.inStock = commodity.getInStock();
-        this.rating = commodity.getRating();
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long shoppingItemId;
+
+
+    @ManyToOne
+    @JoinColumn(name = "commodityId", nullable = false)
+    private Commodity commodity;
+
+    @ManyToOne
+    @JoinColumn(name = "shoppingListId")
+    private ShoppingList shoppingList;
+
+    @Column(nullable = false)
+    private long count;
+
+    public ShoppingItem() {
+
+    }
+
+    public ShoppingItem(Commodity commodity, ShoppingList shoppingList, long count) {
+        this.commodity = commodity;
+        this.shoppingList = shoppingList;
         this.count = count;
     }
 
-    public long getCommodityId() {
-        return commodityId;
+    public ShoppingItem(Commodity commodity, long count) {
+        this.commodity = commodity;
+        this.count = count;
     }
 
-
-    public String getCommodityName() {
-        return commodityName;
+    public long getShoppingItemId() {
+        return shoppingItemId;
     }
 
+    public void setShoppingItemId(long shoppingItemId) {
+        this.shoppingItemId = shoppingItemId;
+    }
+
+    public Commodity getCommodity() {
+        return commodity;
+    }
+
+    public void setCommodity(Commodity commodity) {
+        this.commodity = commodity;
+    }
+
+    public ShoppingList getShoppingList() {
+        return shoppingList;
+    }
+
+    public void setShoppingList(ShoppingList shoppingList) {
+        this.shoppingList = shoppingList;
+    }
 
     public long getCount() {
         return count;
     }
 
-
-    public long getInStock() {
-        return inStock;
-    }
-
-
-    public float getRating() {
-        return rating;
-    }
-
-    public long getPrice() {
-        return price;
-    }
-
-    public List<String> getCategories() {
-        return categories;
-    }
-
-    public long getProviderId() {
-        return providerId;
+    public void setCount(long count) {
+        this.count = count;
     }
 }

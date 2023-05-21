@@ -1,59 +1,51 @@
 package ie.baloot6.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 
+import java.sql.Timestamp;
+
+@Entity
+@Table(name = "comments")
 public class Comment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long commentId;
-    private String username;
 
-    @JsonIgnore
-    private String userEmail;
+    @Column(nullable = false)
+    private long userId;
+
+
+    @Column(nullable = false)
     private Long commodityId;
+
+    @Column(nullable = false)
     private String text;
-    private String date;
-    private int likes;
-    private int dislikes;
 
-    public Comment(Long commentId, Long commodityId, String username, String userEmail, String text, String date) {
-        this.commentId = commentId;
-        this.commodityId = commodityId;
-        this.username = username;
-        this.userEmail = userEmail;
+    @Column(nullable = false)
+    private Timestamp date;
+
+    public Comment(long userId, long commodityId, String text) {
+        this.userId = userId;
+        this.commentId = commodityId;
         this.text = text;
-        this.date = date;
     }
 
-    public void addVote(int vote) {
-        if(vote == 1) {
-            likes++;
-        }
-        else {
-            dislikes++;
-        }
+    public Comment() {
     }
 
-    public void removeVote(int vote) {
-        if(vote == 1) {
-            likes--;
-        }
-        else {
-            dislikes--;
-        }
+    public long getUserId() {
+        return userId;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public void setCommodityId(Long commodityId) {
         this.commodityId = commodityId;
     }
 
-    public void setDate(String date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 
@@ -73,35 +65,11 @@ public class Comment {
         this.text = text;
     }
 
-    public String getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
     public Long getCommodityId() {
         return commodityId;
-    }
-
-    public int getLikes() {
-        return likes;
-    }
-
-    public void setLikes(int likes) {
-        this.likes = likes;
-    }
-
-    public int getDislikes() {
-        return dislikes;
-    }
-
-    public void setDislikes(int dislikes) {
-        this.dislikes = dislikes;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
     }
 }
