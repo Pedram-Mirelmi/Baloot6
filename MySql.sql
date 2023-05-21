@@ -36,23 +36,17 @@ CREATE TABLE commodities
         ON DELETE CASCADE
 );
 
-CREATE TABLE shoppingLists
-(
-    shoppingListId      INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    userId              INT UNSIGNED NOT NULL ,
-    FOREIGN KEY (userId) REFERENCES users(userId)
-        ON DELETE CASCADE
-);
 
 CREATE TABLE shoppingItems
 (
     shoppingItemId   INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    shoppingListId      INT UNSIGNED NOT NULL ,
+    userId              INT UNSIGNED NOT NULL ,
     commodityId         INT UNSIGNED NOT NULL ,
     count               INT UNSIGNED NOT NULL ,
+    beenPurchased       BOOLEAN NOT NULL DEFAULT (FALSE),
     FOREIGN KEY (commodityId) REFERENCES commodities(commodityId)
         ON DELETE CASCADE,
-    FOREIGN KEY (shoppingListId) REFERENCES shoppingLists(shoppingListId)
+    FOREIGN KEY (userId) REFERENCES users(userId)
         ON DELETE CASCADE
 );
 
