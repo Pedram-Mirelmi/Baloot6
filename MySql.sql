@@ -7,10 +7,9 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE users
 (
-    userId             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    userId              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username            VARCHAR(255) UNIQUE NOT NULL,
     password            VARCHAR(255) NOT NULL ,
-    buyListId           INT UNSIGNED NOT NULL ,
     name                VARCHAR(255) NOT NULL ,
     email               VARCHAR(127) NOT NULL ,
     birthday            DATE NOT NULL ,
@@ -44,10 +43,6 @@ CREATE TABLE shoppingLists
     FOREIGN KEY (userId) REFERENCES users(userId)
         ON DELETE CASCADE
 );
-
-ALTER TABLE users
-ADD FOREIGN KEY (buyListId) REFERENCES shoppingLists(shoppingListId);
-
 
 CREATE TABLE shoppingItems
 (
