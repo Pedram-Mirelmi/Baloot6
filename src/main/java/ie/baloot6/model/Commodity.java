@@ -39,6 +39,10 @@ public class Commodity {
                 inverseJoinColumns = @JoinColumn(name = "categoryId"))
     private Set<Category> categorySet;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "commodityId")
+    private Set<Rating> ratings;
+
 
     public Commodity(String name, Provider provider, long price, long inStock) {
         this.provider = provider;
@@ -110,6 +114,14 @@ public class Commodity {
 
     public void setProvider(Provider provider) {
         this.provider = provider;
+    }
+
+    public Set<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(Set<Rating> ratings) {
+        this.ratings = ratings;
     }
 
     @Override

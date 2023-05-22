@@ -2,6 +2,7 @@ package ie.baloot6.model;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -32,5 +33,19 @@ public class Category {
 
     public Set<Commodity> getCommoditySet() {
         return commoditySet;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Category category = (Category) o;
+        return categoryId == category.categoryId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(categoryId);
     }
 }
