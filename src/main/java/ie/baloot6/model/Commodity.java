@@ -21,9 +21,9 @@ public class Commodity {
     @SerializedName("name")
     private String name;
 
-    @Column(nullable = false)
-    @SerializedName("providerId")
-    private long providerId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "providerId")
+    private Provider provider;
 
     @Column(nullable = false)
     @SerializedName("price")
@@ -40,16 +40,16 @@ public class Commodity {
     private Set<Category> categorySet;
 
 
-    public Commodity(long commodityId, String name, long providerId, long price, long inStock) {
-        this.commodityId = commodityId;
+    public Commodity(String name, Provider provider, long price, long inStock) {
+        this.provider = provider;
         this.name = name;
-        this.providerId = providerId;
         this.price = price;
         this.inStock = inStock;
     }
 
     public Commodity(Commodity commodity) {
-        this(commodity.commodityId, commodity.name, commodity.providerId, commodity.price, commodity.getInStock());
+        this(commodity.name, commodity.getProvider(), commodity.price, commodity.getInStock());
+        this.commodityId = commodity.getCommodityId();
         categorySet = commodity.getCategorySet();
     }
 
@@ -75,14 +75,6 @@ public class Commodity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public long getProviderId() {
-        return providerId;
-    }
-
-    public void setProviderId(long providerId) {
-        this.providerId = providerId;
     }
 
     public long getPrice() {
@@ -112,16 +104,19 @@ public class Commodity {
         setInStock(getInStock() - amount);
     }
 
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Commodity commodity = (Commodity) o;
         return commodityId == commodity.commodityId;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(commodityId, name, providerId, price);
     }
 }

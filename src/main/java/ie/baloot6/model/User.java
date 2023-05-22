@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -23,10 +25,6 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    @JsonIgnore
-    private long buyListId;
-
-    @Column(nullable = false)
     @SerializedName("email")
     private String email;
 
@@ -41,6 +39,13 @@ public class User {
     @Column(nullable = false)
     @SerializedName("credit")
     private long credit;
+
+//    @ManyToMany
+//    @JoinTable(name = "discountUses",
+//                joinColumns = @JoinColumn(name = "userId"),
+//                inverseJoinColumns = @JoinColumn(name = "discountId"))
+//    @JoinColumn(name = "userId")
+//    private Set<Discount> usedDiscounts;
 
 
     public User(String username, String password, String email, Date birthDate, String address, long credit) {
@@ -118,12 +123,11 @@ public class User {
         this.credit = credit;
     }
 
-    public long getBuyListId() {
-        return buyListId;
+    public Set<Discount> getUsedDiscounts() {
+        return usedDiscounts;
     }
 
-    public void setBuyListId(long buyListId) {
-        this.buyListId = buyListId;
+    public void setUsedDiscounts(Set<Discount> usedDiscounts) {
+        this.usedDiscounts = usedDiscounts;
     }
-
 }

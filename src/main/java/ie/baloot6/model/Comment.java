@@ -3,6 +3,7 @@ package ie.baloot6.model;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Entity
 @Table(name = "comments")
@@ -11,12 +12,13 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long commentId;
 
-    @Column(nullable = false)
-    private long userId;
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
 
-
-    @Column(nullable = false)
-    private Long commodityId;
+    @ManyToOne
+    @JoinColumn(name = "commodityId")
+    private Commodity commodity;
 
     @Column(nullable = false)
     private String text;
@@ -24,25 +26,18 @@ public class Comment {
     @Column(nullable = false)
     private Timestamp date;
 
-    public Comment(long userId, long commodityId, String text) {
-        this.userId = userId;
-        this.commentId = commodityId;
+    @OneToMany
+    @JoinColumn(name = "commentId")
+    private Set<Vote> votes;
+
+    public Comment(User user, Commodity commodity, String text, Timestamp date) {
+        this.user = user;
+        this.commodity = commodity;
         this.text = text;
+        this.date = date;
     }
 
     public Comment() {
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
-    public void setCommodityId(Long commodityId) {
-        this.commodityId = commodityId;
     }
 
     public void setDate(Timestamp date) {
@@ -69,7 +64,27 @@ public class Comment {
         return date;
     }
 
-    public Long getCommodityId() {
-        return commodityId;
+    public Commodity getCommodity() {
+        return commodity;
+    }
+
+    public void setCommodity(Commodity commodity) {
+        this.commodity = commodity;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Set<Vote> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(Set<Vote> votes) {
+        this.votes = votes;
     }
 }

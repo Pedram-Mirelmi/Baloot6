@@ -2,12 +2,10 @@ package ie.baloot6.model;
 
 
 import com.google.gson.annotations.SerializedName;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "providers")
@@ -25,6 +23,10 @@ public class Provider {
     @Column(nullable = false)
     @SerializedName("registryDate")
     private Date registryDate;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "providerId")
+    private Set<Commodity> commoditySet;
 
     public Provider(String name, Date registryDate) {
         this.name = name;

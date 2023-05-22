@@ -12,31 +12,37 @@ public class ShoppingItem {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long shoppingItemId;
 
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "commodityId", nullable = false)
     private Commodity commodity;
 
-    @ManyToOne
-    @JoinColumn(name = "shoppingListId")
-    private ShoppingList shoppingList;
-
     @Column(nullable = false)
     private long count;
 
+    public boolean isBeenPurchased() {
+        return beenPurchased;
+    }
+
+    public void setBeenPurchased(boolean beenPurchased) {
+        this.beenPurchased = beenPurchased;
+    }
+
+    @Column(nullable = false)
+    private boolean beenPurchased;
+
+    public ShoppingItem(User user, Commodity commodity, long count, boolean beenPurchased) {
+        this.user = user;
+        this.commodity = commodity;
+        this.count = count;
+        this.beenPurchased = beenPurchased;
+    }
+
     public ShoppingItem() {
 
-    }
-
-    public ShoppingItem(Commodity commodity, ShoppingList shoppingList, long count) {
-        this.commodity = commodity;
-        this.shoppingList = shoppingList;
-        this.count = count;
-    }
-
-    public ShoppingItem(Commodity commodity, long count) {
-        this.commodity = commodity;
-        this.count = count;
     }
 
     public long getShoppingItemId() {
@@ -55,19 +61,19 @@ public class ShoppingItem {
         this.commodity = commodity;
     }
 
-    public ShoppingList getShoppingList() {
-        return shoppingList;
-    }
-
-    public void setShoppingList(ShoppingList shoppingList) {
-        this.shoppingList = shoppingList;
-    }
-
     public long getCount() {
         return count;
     }
 
     public void setCount(long count) {
         this.count = count;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
