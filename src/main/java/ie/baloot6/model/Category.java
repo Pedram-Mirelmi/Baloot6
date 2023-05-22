@@ -17,11 +17,11 @@ public class Category {
     @Column(nullable = false)
     private String categoryName;
 
-    @ManyToMany(mappedBy = "categorySet", fetch = FetchType.EAGER)
-//    @JoinTable(name = "commoditiesCategories",
-//                joinColumns = {@JoinColumn(name = "categoryId")},
-//                inverseJoinColumns = {@JoinColumn(name = "commodityId")})
-    private Set<Commodity> commoditySet = new HashSet<>();;
+    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @JoinTable(name = "commoditiesCategories",
+                joinColumns = {@JoinColumn(name = "categoryId")},
+                inverseJoinColumns = {@JoinColumn(name = "commodityId")})
+    private Set<Commodity> commoditySet = new HashSet<>();
 
 
     public Category() {

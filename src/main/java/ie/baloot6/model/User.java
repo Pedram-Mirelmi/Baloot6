@@ -34,12 +34,6 @@ public class User {
     @Column(nullable = false)
     private long credit;
 
-//    @ManyToMany
-//    @JoinTable(name = "discountUses",
-//                joinColumns = @JoinColumn(name = "userId"),
-//                inverseJoinColumns = @JoinColumn(name = "discountId"))
-//    @JoinColumn(name = "userId")
-//    private Set<Discount> usedDiscounts;
 
 
     public User(String username, String password, String email, Date birthDate, String address, long credit) {

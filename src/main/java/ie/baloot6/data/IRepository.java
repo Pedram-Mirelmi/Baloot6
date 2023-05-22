@@ -25,7 +25,7 @@ public interface IRepository {
 
     Optional<Provider> getProvider(long id);
 
-    void addCommodity(long commodityId, String name, long providerId, long price, long inStock) throws InvalidIdException;
+    void addCommodity(long commodityId, String name, long providerId, long price, long inStock, List<String> categories) throws InvalidIdException;
 
     void addDiscount(@NotNull String discountCode, int discountAmount);
 

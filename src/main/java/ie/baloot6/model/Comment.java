@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -27,9 +28,9 @@ public class Comment {
     @Column(nullable = false)
     private Date date;
 
-    @OneToMany
+    @OneToMany(cascade=CascadeType.ALL)
     @JoinColumn(name = "commentId")
-    private Set<Vote> votes;
+    private Set<Vote> votes = new HashSet<>();;
 
     public Comment(Long commentId, User user, Commodity commodity, String text, Date date) {
         this.commentId = commentId;

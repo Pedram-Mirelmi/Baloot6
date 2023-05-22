@@ -8,19 +8,18 @@ import ie.baloot6.exception.InvalidIdException;
 import ie.baloot6.exception.InvalidValueException;
 import ie.baloot6.exception.NotEnoughAmountException;
 import ie.baloot6.model.*;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -30,6 +29,7 @@ public class Repository implements IRepository {
 
     public Repository() throws ParseException {
         var registry = new StandardServiceRegistryBuilder().configure().build();
+//        entityManagerFactory = Persistence.createEntityManagerFactory("default");
         entityManagerFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
         getData("http://5.253.25.110:5000/api/");
     }
@@ -77,6 +77,7 @@ public class Repository implements IRepository {
             try {
                 addUser(user.getUsername(), user.getPassword(), user.getEmail(), new Date(formatter.parse(user.getBirthDate()).getTime()), user.getAddress(), user.getCredit());
             } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
         }
         ProviderDJO[] providersList = gson.fromJson(getResource(apiUri + "providers"), ProviderDJO[].class);
@@ -85,19 +86,18 @@ public class Repository implements IRepository {
             try {
                 addProvider(provider.getId(), provider.getName(), new Date(formatter.parse(provider.getRegistryDate()).getTime()));
             }
-            catch (Exception e)
-            {
-
+            catch (Exception e)  {
+                System.out.println(e.getMessage());
             }
         }
 
         CommodityDJO[] commoditiesList = gson.fromJson(getResource(apiUri + "commodities"), CommodityDJO[].class);
         for (CommodityDJO commodity : commoditiesList) {
             try {
-                addCommodity(commodity.getId(), commodity.getName(), commodity.getProviderId(), commodity.getPrice(), commodity.getInStock());
+                addCommodity(commodity.getId(), commodity.getName(), commodity.getProviderId(), commodity.getPrice(), commodity.getInStock(), commodity.getCategories());
             }
             catch (Exception e) {
-
+                System.out.println(e.getMessage());
             }
         }
 
@@ -114,9 +114,8 @@ public class Repository implements IRepository {
                         new Date(formatter.parse(commentsList[i].getDate()).getTime()),
                         commentsList[i].getText());
             }
-            catch (Exception e)
-            {
-
+            catch (Exception e) {
+                System.out.println(e.getMessage());
             }
         }
 
@@ -127,7 +126,7 @@ public class Repository implements IRepository {
             }
             catch (Exception e)
             {
-
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -202,20 +201,33 @@ public class Repository implements IRepository {
     }
 
     @Override
-    public void addCommodity(long commodityId, String name, long providerId, long price, long inStock) throws InvalidIdException {
+    public void addCommodity(long commodityId, String name, long providerId, long price, long inStock, List<String> categories) throws InvalidIdException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
         Provider provider = entityManager.find(Provider.class, providerId);
         if (provider == null) {
-            entityManager.getTransaction().commit();
+            entityManager.getTransaction().rollback();
             throw new InvalidIdException("Invalid provider id");
         }
 
-        entityManager.persist(new Commodity(name, provider, price, inStock));
+        Commodity commodity = new Commodity(name, provider, price, inStock);
+
+        for (var categoryName : categories) {
+            var categoryObj = getCategoryByName(categoryName, entityManager);
+            if(categoryObj.isEmpty()) {
+                commodity.getCategorySet().add(new Category(categoryName));
+            }
+            else {
+                commodity.getCategorySet().add(categoryObj.get());
+            }
+        }
+
+        entityManager.persist(commodity);
 
         entityManager.getTransaction().commit();
     }
+
 
     @Override
     public void addDiscount(@NotNull String discountCode, int discountAmount) {
@@ -285,7 +297,7 @@ public class Repository implements IRepository {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         var resultList = entityManager.createQuery("select c from Commodity c where c.name like :name")
-                .setParameter("name", name)
+                .setParameter("name", "%" + name + "%")
                 .getResultList();
 
         return resultList;
@@ -534,10 +546,11 @@ public class Repository implements IRepository {
 
         User user = getUser(username, entityManager);
 
-        return (Long) entityManager.createQuery(
+        var resultList = entityManager.createQuery(
                 "select distinct(si.commodity.commodityId) from ShoppingItem si where si.user.userId=:userId and si.beenPurchased=false ")
                 .setParameter("userId", user.getUserId())
-                .getSingleResult();
+                .getResultList();
+        return resultList.isEmpty() || resultList.get(0) == null ? 0 : (Long) resultList.get(0);
     }
 
     @Override

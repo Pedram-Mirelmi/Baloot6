@@ -1,19 +1,18 @@
 package ie.ballot5.baloot5;
 
+import com.google.common.collect.Lists;
 import ie.baloot6.data.IRepository;
-import ie.baloot6.model.Commodity;
-import ie.baloot6.model.Discount;
 import ie.baloot6.model.User;
 import ie.baloot6.service.Repository;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.lang.annotation.RetentionPolicy;
 import java.sql.Date;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -59,7 +58,7 @@ class RepositoryTest {
 
 	@Test
 	void testAddCommodity() {
-		repository.addCommodity(1, "c1", 1, 2000, 26);
+		repository.addCommodity(1, "c1", 1, 2000, 26, List.of("cat3", "cat2"));
 	}
 
 	@Test

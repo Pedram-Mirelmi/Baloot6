@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,9 +22,9 @@ public class Provider {
     @Column(nullable = false)
     private Date registryDate;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn(name = "providerId")
-    private Set<Commodity> commoditySet;
+    private Set<Commodity> commoditySet = new HashSet<>();;
 
     public Provider(String name, Date registryDate) {
         this.name = name;

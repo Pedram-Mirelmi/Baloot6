@@ -29,15 +29,15 @@ public class Commodity {
     @Column(nullable = false)
     private long inStock;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "commoditiesCategories",
-                joinColumns = @JoinColumn(name = "commodityId"),
-                inverseJoinColumns = @JoinColumn(name = "categoryId"))
-    Set<Category> categorySet;
+    @ManyToMany(mappedBy = "commoditySet", fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+//    @JoinTable(name = "commoditiesCategories",
+//                joinColumns = @JoinColumn(name = "commodityId"),
+//                inverseJoinColumns = @JoinColumn(name = "categoryId"))
+    Set<Category> categorySet = new HashSet<>();;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn(name = "commodityId")
-    private Set<Rating> ratings;
+    private Set<Rating> ratings = new HashSet<>();;
 
 
     public Commodity(String name, Provider provider, long price, long inStock) {

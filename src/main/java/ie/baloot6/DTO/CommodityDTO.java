@@ -6,19 +6,12 @@ import java.util.List;
 
 public class CommodityDTO {
     private long commodityId;
-
     private String name;
-
     private long providerId;
-
     private long price;
-
     private List<String> categories;
-
     private float rating;
-
     private long inStock;
-
     final private long inCart;
     final private long rateCount;
     final private String providerName;
@@ -29,6 +22,7 @@ public class CommodityDTO {
         this.providerId = commodity.getProvider().getProviderId();
         this.price = commodity.getPrice();
         commodity.getCategorySet().forEach(c -> categories.add(c.getCategoryName()));
+        this.inStock = commodity.getInStock();
         this.inCart = inCart;
         rateCount = commodity.getRatings().size();
         commodity.getRatings().forEach(r -> rating += r.getRating()/rateCount);
