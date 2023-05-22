@@ -7,9 +7,10 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE users
 (
-    userId              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    userId             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username            VARCHAR(255) UNIQUE NOT NULL,
     password            VARCHAR(255) NOT NULL ,
+    buyListId           INT UNSIGNED NOT NULL ,
     name                VARCHAR(255) NOT NULL ,
     email               VARCHAR(127) NOT NULL ,
     birthday            DATE NOT NULL ,
@@ -93,8 +94,6 @@ CREATE TABLE discounts
     discountAmount  INT UNSIGNED NOT NULL
 );
 
-DROP TABLE IF EXISTS shoppingItems;
-
 
 DROP TABLE IF EXISTS comments;
 
@@ -116,11 +115,20 @@ DROP TABLE IF EXISTS commentsVotes;
 
 CREATE TABLE commentsVotes
 (
+    userId          INT UNSIGNED NOT NULL ,
     commentId       INT UNSIGNED NOT NULL ,
     vote            INT SIGNED  NOT NULL ,
     FOREIGN KEY (commentId) REFERENCES comments(commentId)
         ON DELETE CASCADE
 );
 
-
-SELECT * from discounts;
+CREATE TABLE discountUses
+(
+    discountUseId       INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    discountId          INT UNSIGNED NOT NULL ,
+    userId              INT UNSIGNED NOT NULL ,
+    FOREIGN KEY (discountId) REFERENCES discounts(discountId)
+        ON DELETE CASCADE ,
+    FOREIGN KEY (userId) REFERENCES users(userId)
+        ON DELETE CASCADE
+);
