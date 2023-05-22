@@ -29,7 +29,7 @@ public class UserController {
     public User getUser(@RequestHeader(AUTH_TOKEN) String authToken, @PathVariable(USERNAME) String username) {
         if(sessionManager.isValidToken(authToken)) {
             try {
-                return repository.getUser(username).get();
+                return repository.getUserByUsername(username);
             }
             catch (NoSuchElementException e) {
                 throw new InvalidIdException("Invalid username");

@@ -35,7 +35,7 @@ public class CommodityController {
                 return new CommodityDTO(repository.getCommodityById(commodityId).get(),
                         repository.getInShoppingListCount(user.getUsername(), commodityId),
                         repository.getCommodityRateCount(commodityId),
-                        repository.getProvider(repository.getCommodityById(commodityId).get().getProviderId()).get().getName());
+                        repository.getProvider(repository.getCommodityById(commodityId).get().getProvider().getProviderId()).get().getName());
             } catch (NoSuchElementException e) {
                 throw new InvalidIdException("Invalid commodity Id");
             }
@@ -62,7 +62,7 @@ public class CommodityController {
                         commodity -> new CommodityDTO(commodity,
                                 repository.getInShoppingListCount(user.getUsername(), commodity.getCommodityId()),
                                 repository.getCommodityRateCount(commodity.getCommodityId()),
-                                repository.getProvider(commodity.getProviderId()).get().getName())
+                                repository.getProvider(commodity.getProvider().getProviderId()).get().getName())
                 );
                 if (onlyAvailable) {
                     stream = stream.filter(commodityDTO -> commodityDTO.getInStock() > 0);
@@ -80,9 +80,9 @@ public class CommodityController {
                                  @RequestBody Map<String, String> body) {
         if (sessionManager.isValidToken(authToken)) {
             long commodityId = Long.parseLong(body.get(COMMODITY_ID));
-            float rate = Float.parseFloat(body.get(RATING));
+            double rate = Float.parseFloat(body.get(RATING));
             User user = sessionManager.getUser(authToken).get();
-            float newRating = repository.addRating(user.getUsername(), commodityId, rate);
+            double newRating = repository.addRating(user.getUsername(), commodityId, rate);
             return new RateDTO(SUCCESS, newRating, repository.getCommodityRateCount(commodityId));
         }
         throw new InvalidValueException("Authentication token not valid");
@@ -99,7 +99,7 @@ public class CommodityController {
                         commodity -> new CommodityDTO(commodity,
                                 repository.getInShoppingListCount(user.getUsername(), commodity.getCommodityId()),
                                 repository.getCommodityRateCount(commodity.getCommodityId()),
-                                repository.getProvider(commodity.getProviderId()).get().getName())
+                                repository.getProvider(commodity.getProvider().getProviderId()).get().getName())
 
                 ).toList();
             } catch (NoSuchElementException | InvalidIdException e) {

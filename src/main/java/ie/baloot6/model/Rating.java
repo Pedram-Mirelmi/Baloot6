@@ -19,12 +19,12 @@ public class Rating {
     private Commodity commodity;
 
     @Column(nullable = false)
-    private float rating;
+    private double rating;
 
     public Rating() {
     }
 
-    public Rating(User user, Commodity commodity, float rating) {
+    public Rating(User user, Commodity commodity, double rating) {
         this.user = user;
         this.commodity = commodity;
         this.rating = rating;
@@ -54,11 +54,11 @@ public class Rating {
         this.commodity = commodity;
     }
 
-    public float getRating() {
+    public double getRating() {
         return rating;
     }
 
-    public void setRating(float rating) {
+    public void setRating(double rating) {
         this.rating = rating;
     }
 }

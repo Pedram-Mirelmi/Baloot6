@@ -58,7 +58,7 @@ public class CommentController {
         if(sessionManager.isValidToken(authToken)) {
             try {
                 User user = sessionManager.getUser(authToken).get();
-                repository.addComment(user.getUsername(), comment.getCommodityId(), comment.getText());
+                repository.addComment(user.getUsername(), comment.getCommodity().getCommodityId(), comment.getText());
                 return Map.of(STATUS, SUCCESS);
             } catch (NoSuchElementException e) {
                 sessionManager.removeSession(authToken);

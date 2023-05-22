@@ -10,10 +10,8 @@ CREATE TABLE users
     userId             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username            VARCHAR(255) UNIQUE NOT NULL,
     password            VARCHAR(255) NOT NULL ,
-    buyListId           INT UNSIGNED NOT NULL ,
-    name                VARCHAR(255) NOT NULL ,
     email               VARCHAR(127) NOT NULL ,
-    birthday            DATE NOT NULL ,
+    birthDate           DATE NOT NULL ,
     address             TEXT NOT NULL ,
     credit              INT UNSIGNED NOT NULL
 
@@ -65,6 +63,7 @@ CREATE TABLE commoditiesCategories
 (
     commodityId         INT UNSIGNED NOT NULL ,
     categoryId          INT UNSIGNED NOT NULL ,
+    UNIQUE (commodityId, categoryId),
     FOREIGN KEY (commodityId) REFERENCES commodities(commodityId)
         ON DELETE CASCADE ,
     FOREIGN KEY (categoryId) REFERENCES categories(categoryId)
@@ -78,7 +77,8 @@ CREATE TABLE ratings
     ratingId            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY ,
     userId              INT UNSIGNED NOT NULL ,
     commodityId         INT UNSIGNED NOT NULL ,
-    rating              DECIMAL NOT NULL ,
+    rating              FLOAT NOT NULL ,
+    UNIQUE (userId, commodityId),
     FOREIGN KEY (userId) REFERENCES users(userId)
         ON DELETE CASCADE ,
     FOREIGN KEY (commodityId) REFERENCES commodities(commodityId)
@@ -90,7 +90,7 @@ DROP TABLE IF EXISTS discounts;
 CREATE TABLE discounts
 (
     discountId      INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    discountCode    VARCHAR(63) NOT NULL ,
+    discountCode    VARCHAR(63) UNIQUE NOT NULL ,
     discountAmount  INT UNSIGNED NOT NULL
 );
 
@@ -118,6 +118,7 @@ CREATE TABLE commentsVotes
     userId          INT UNSIGNED NOT NULL ,
     commentId       INT UNSIGNED NOT NULL ,
     vote            INT SIGNED  NOT NULL ,
+    UNIQUE (userId, commentId),
     FOREIGN KEY (commentId) REFERENCES comments(commentId)
         ON DELETE CASCADE
 );
@@ -127,6 +128,7 @@ CREATE TABLE discountUses
     discountUseId       INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     discountId          INT UNSIGNED NOT NULL ,
     userId              INT UNSIGNED NOT NULL ,
+    UNIQUE (userId, discountId),
     FOREIGN KEY (discountId) REFERENCES discounts(discountId)
         ON DELETE CASCADE ,
     FOREIGN KEY (userId) REFERENCES users(userId)

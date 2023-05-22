@@ -19,8 +19,8 @@ public class CommentDTO{
     public CommentDTO(Comment comment, int usersVote) {
         this.commentId = comment.getCommentId();
         this.usersVote = usersVote;
-        this.userId = comment.getUserId();
-        this.commodityId = comment.getCommodityId();
+        this.userId = comment.getUser().getUserId();
+        this.commodityId = comment.getCommodity().getCommodityId();
         this.text = comment.getText();
         this.date = comment.getDate();
     }

@@ -2,6 +2,7 @@ package ie.baloot6.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -16,11 +17,19 @@ public class Category {
     @Column(nullable = false)
     private String categoryName;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "commoditiesCategories",
-                joinColumns = @JoinColumn(name = "categoryId"),
-                inverseJoinColumns = @JoinColumn(name = "commodityId"))
-    private Set<Commodity> commoditySet;
+    @ManyToMany(mappedBy = "categorySet", fetch = FetchType.EAGER)
+//    @JoinTable(name = "commoditiesCategories",
+//                joinColumns = {@JoinColumn(name = "categoryId")},
+//                inverseJoinColumns = {@JoinColumn(name = "commodityId")})
+    private Set<Commodity> commoditySet = new HashSet<>();;
+
+
+    public Category() {
+    }
+
+    public Category(String categoryName) {
+        this.categoryName = categoryName;
+    }
 
 
     public long getCategoryId() {

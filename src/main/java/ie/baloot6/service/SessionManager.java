@@ -34,10 +34,10 @@ public class SessionManager implements ISessionManager {
     @Override
     public String addSession(@NotNull String username, @NotNull String password) throws NoSuchAlgorithmException {
         try {
-            if(password.equals(repository.getUser(username).get().getPassword())) {
+            if(password.equals(repository.getUserByUsername(username).getPassword())) {
                 final MessageDigest digest = MessageDigest.getInstance("SHA-256");
                 String authToken = new String(Hex.encodeHex(digest.digest(String.format("%s:%s", username, password).getBytes())));
-                sessions.put(authToken, repository.getUser(username).get());
+                sessions.put(authToken, repository.getUserByUsername(username));
                 return authToken;
             }
             throw new UnauthorizedException("Wrong password");

@@ -18,8 +18,7 @@ public interface IRepository {
 
     void addUser(String username, String password, String email, Date birthDate, String address, long credit) throws InvalidIdException;
 
-    Optional<User> getUser(@NotNull String username);
-
+    User getUserByUsername(@NotNull String username);
 
     void addProvider(@NotNull String name, long providerId) throws InvalidIdException;
 
@@ -45,7 +44,7 @@ public interface IRepository {
 
     void removeFromBuyList(@NotNull String username, long commodityId, long count) throws NotEnoughAmountException;
 
-    float addRating(@NotNull String username, long commodityId, float rate);
+    double addRating(@NotNull String username, long commodityId, double rate);
 
     void addVote(@NotNull String voter, long commentId, int vote) throws InvalidIdException, InvalidValueException;
 
@@ -59,7 +58,9 @@ public interface IRepository {
 
     void purchase(@NotNull String username, float discount) throws NotEnoughAmountException, InvalidIdException;
 
-    Optional<Float> getRating(@NotNull String username, long commodityId);
+    Optional<Double> getCommodityRating(long commodityId);
+
+    Optional<Double> getUserRating(@NotNull String username, long commodityId);
 
     long calculateTotalBuyListPrice(String username) throws InvalidIdException;
 
@@ -82,5 +83,7 @@ public interface IRepository {
     long getCommodityRateCount(long commodityId);
 
     int getUserVoteForComment(String username, long commentId);
+
+    void addCategory(String categoryName);
 }
 

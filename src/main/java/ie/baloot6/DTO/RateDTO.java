@@ -1,11 +1,11 @@
 package ie.baloot6.DTO;
 
 public class RateDTO {
-    private final float rating;
+    private final double rating;
     private final String status;
     private final long rateCount;
 
-    public float getRating() {
+    public double getRating() {
         return rating;
     }
 
@@ -17,7 +17,7 @@ public class RateDTO {
     public long getRateCount() {
         return rateCount;
     }
-    public RateDTO(String status, float rating, long commodityRateCount) {
+    public RateDTO(String status, double rating, long commodityRateCount) {
         this.rating = rating;
         this.status = status;
         this.rateCount = commodityRateCount;

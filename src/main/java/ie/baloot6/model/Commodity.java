@@ -37,7 +37,7 @@ public class Commodity {
     @JoinTable(name = "commoditiesCategories",
                 joinColumns = @JoinColumn(name = "commodityId"),
                 inverseJoinColumns = @JoinColumn(name = "categoryId"))
-    private Set<Category> categorySet;
+    Set<Category> categorySet;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "commodityId")
