@@ -6,23 +6,37 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
-public class CommentDTO{
+public class CommentDTO {
     private Long commentId;
-    private final int usersVote;
-    private long userId;
+    private String username;
+    private String userEmail;
     private Long commodityId;
     private String text;
-    private Timestamp date;
+    private Date date;
+
+    private long likes;
+    private long dislikes;
+    private final int usersVote;
 
     public CommentDTO(Comment comment, int usersVote) {
         this.commentId = comment.getCommentId();
-        this.usersVote = usersVote;
-        this.userId = comment.getUser().getUserId();
+        this.username = comment.getUser().getUsername();
+        this.userEmail = comment.getUser().getEmail();
         this.commodityId = comment.getCommodity().getCommodityId();
         this.text = comment.getText();
         this.date = comment.getDate();
+        this.usersVote = usersVote;
+        comment.getVotes().forEach(v -> {
+            if(v.getVote() == 1) {
+                likes++;
+            }
+            if(v.getVote() == -1) {
+                dislikes++;
+            }
+        });
     }
 
     public Long getCommentId() {
@@ -31,14 +45,6 @@ public class CommentDTO{
 
     public void setCommentId(Long commentId) {
         this.commentId = commentId;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 
     public Long getCommodityId() {
@@ -57,17 +63,47 @@ public class CommentDTO{
         this.text = text;
     }
 
-    public Timestamp getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(Timestamp date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
-
-
     public int getUsersVote() {
         return usersVote;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
+    public long getLikes() {
+        return likes;
+    }
+
+    public void setLikes(long likes) {
+        this.likes = likes;
+    }
+
+    public long getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(long dislikes) {
+        this.dislikes = dislikes;
     }
 }

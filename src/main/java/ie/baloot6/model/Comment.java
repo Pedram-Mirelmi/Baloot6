@@ -2,6 +2,7 @@ package ie.baloot6.model;
 
 import jakarta.persistence.*;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Set;
 
@@ -24,13 +25,21 @@ public class Comment {
     private String text;
 
     @Column(nullable = false)
-    private Timestamp date;
+    private Date date;
 
     @OneToMany
     @JoinColumn(name = "commentId")
     private Set<Vote> votes;
 
-    public Comment(User user, Commodity commodity, String text, Timestamp date) {
+    public Comment(Long commentId, User user, Commodity commodity, String text, Date date) {
+        this.commentId = commentId;
+        this.user = user;
+        this.commodity = commodity;
+        this.text = text;
+        this.date = date;
+    }
+
+    public Comment(User user, Commodity commodity, String text, Date date) {
         this.user = user;
         this.commodity = commodity;
         this.text = text;
@@ -40,7 +49,7 @@ public class Comment {
     public Comment() {
     }
 
-    public void setDate(Timestamp date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
@@ -60,7 +69,7 @@ public class Comment {
         this.text = text;
     }
 
-    public Timestamp getDate() {
+    public Date getDate() {
         return date;
     }
 

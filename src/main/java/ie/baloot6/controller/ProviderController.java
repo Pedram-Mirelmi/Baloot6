@@ -43,9 +43,7 @@ public class ProviderController {
             User user = sessionManager.getUser(authToken).get();
             return repository.getProvidersCommoditiesList(providerId).stream().map(
                     commodity -> new CommodityDTO(commodity,
-                            repository.getInShoppingListCount(user.getUsername(), commodity.getCommodityId()),
-                            repository.getCommodityRateCount(commodity.getCommodityId()),
-                            repository.getProvider(providerId).get().getName())
+                            repository.getCommodityRateCount(commodity.getCommodityId()))
 
             ).toList();
         }

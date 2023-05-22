@@ -33,9 +33,7 @@ public class CommodityController {
             try {
                 User user = sessionManager.getUser(authToken).get();
                 return new CommodityDTO(repository.getCommodityById(commodityId).get(),
-                        repository.getInShoppingListCount(user.getUsername(), commodityId),
-                        repository.getCommodityRateCount(commodityId),
-                        repository.getProvider(repository.getCommodityById(commodityId).get().getProvider().getProviderId()).get().getName());
+                        repository.getInShoppingListCount(user.getUsername(), commodityId));
             } catch (NoSuchElementException e) {
                 throw new InvalidIdException("Invalid commodity Id");
             }
@@ -44,11 +42,11 @@ public class CommodityController {
     }
 
     @GetMapping("/api/commodities")
-    public List<CommodityDTO> sortCommodities(@RequestHeader(value = AUTH_TOKEN, required = false) String authToken,
-                                              @RequestParam(QUERY) String query,
-                                              @RequestParam(SORT_BY) String sortBy,
-                                              @RequestParam(SEARCH_BY) String searchBy,
-                                              @RequestParam(AVAILABLE) boolean onlyAvailable) {
+    public List<CommodityDTO> getCommodities(@RequestHeader(value = AUTH_TOKEN, required = false) String authToken,
+                                             @RequestParam(QUERY) String query,
+                                             @RequestParam(SORT_BY) String sortBy,
+                                             @RequestParam(SEARCH_BY) String searchBy,
+                                             @RequestParam(AVAILABLE) boolean onlyAvailable) {
         if (sessionManager.isValidToken(authToken)) {
             try {
                 List<Commodity> result;
@@ -60,9 +58,7 @@ public class CommodityController {
                 User user = sessionManager.getUser(authToken).get();
                 var stream = result.stream().map(
                         commodity -> new CommodityDTO(commodity,
-                                repository.getInShoppingListCount(user.getUsername(), commodity.getCommodityId()),
-                                repository.getCommodityRateCount(commodity.getCommodityId()),
-                                repository.getProvider(commodity.getProvider().getProviderId()).get().getName())
+                                repository.getInShoppingListCount(user.getUsername(), commodity.getCommodityId()))
                 );
                 if (onlyAvailable) {
                     stream = stream.filter(commodityDTO -> commodityDTO.getInStock() > 0);
@@ -94,12 +90,10 @@ public class CommodityController {
         if (sessionManager.isValidToken(authToken)) {
             try {
                 User user = sessionManager.getUser(authToken).get();
-                var recommendeds = repository.getRecommendedCommodities(user.getUsername(), commodityId);
+//                var recommendeds = repository.getRecommendedCommodities(user.getUsername(), commodityId);
                 return repository.getRecommendedCommodities(user.getUsername(), commodityId).stream().map(
                         commodity -> new CommodityDTO(commodity,
-                                repository.getInShoppingListCount(user.getUsername(), commodity.getCommodityId()),
-                                repository.getCommodityRateCount(commodity.getCommodityId()),
-                                repository.getProvider(commodity.getProvider().getProviderId()).get().getName())
+                                repository.getCommodityRateCount(commodity.getCommodityId()))
 
                 ).toList();
             } catch (NoSuchElementException | InvalidIdException e) {

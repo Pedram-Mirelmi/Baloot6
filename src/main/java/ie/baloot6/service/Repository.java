@@ -1,6 +1,9 @@
 package ie.baloot6.service;
 
+import com.google.gson.Gson;
+import ie.baloot6.DJO.*;
 import ie.baloot6.data.IRepository;
+import ie.baloot6.data.StaticData;
 import ie.baloot6.exception.InvalidIdException;
 import ie.baloot6.exception.InvalidValueException;
 import ie.baloot6.exception.NotEnoughAmountException;
@@ -14,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -23,15 +28,119 @@ public class Repository implements IRepository {
 
     private final EntityManagerFactory entityManagerFactory;
 
-    public Repository() {
+    public Repository() throws ParseException {
         var registry = new StandardServiceRegistryBuilder().configure().build();
         entityManagerFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+        getData("http://5.253.25.110:5000/api/");
+    }
+
+    private String getResource(@NotNull String uri) {
+        if (uri.equals("http://5.253.25.110:5000/api/users"))
+            return StaticData.usersString;
+        if (uri.equals("http://5.253.25.110:5000/api/commodities"))
+            return StaticData.commoditiesString;
+        if (uri.equals("http://5.253.25.110:5000/api/providers"))
+            return StaticData.providersString;
+        if (uri.equals("http://5.253.25.110:5000/api/comments"))
+            return StaticData.commentsString;
+        if (uri.equals("http://5.253.25.110:5000/api/discount"))
+            return StaticData.discounts;
+        return null;
+//        try {
+//            URL obj = new URL(uri);
+//            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+//            con.setRequestMethod("GET");
+//            int responseCode = con.getResponseCode();
+//            if (responseCode != 200)
+//                throw new IOException("foreign api sent a response with status code " + responseCode);
+//            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//            StringBuilder sb = new StringBuilder();
+//            String inputLine;
+//            while ((inputLine = in.readLine()) != null) {
+//                sb.append(inputLine);
+//            }
+//            return sb.toString();
+//        } catch (IOException e) {
+//            System.out.println("Exception occurred while getting data from foreign api:" + e.getMessage());
+//            exit(1);
+//        }
+//        return null;
     }
 
     @Override
-    public void getData(@NotNull String apiUri) throws InvalidIdException {
+    public void getData(@NotNull String apiUri) throws InvalidIdException, ParseException {
+        Gson gson = new Gson();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        UserDJO[] usersList = gson.fromJson(getResource(apiUri + "users"), UserDJO[].class);
+        for (UserDJO user : usersList) {
+            try {
+                addUser(user.getUsername(), user.getPassword(), user.getEmail(), new Date(formatter.parse(user.getBirthDate()).getTime()), user.getAddress(), user.getCredit());
+            } catch (Exception e) {
+            }
+        }
+        ProviderDJO[] providersList = gson.fromJson(getResource(apiUri + "providers"), ProviderDJO[].class);
+        for (ProviderDJO provider : providersList) {
+
+            try {
+                addProvider(provider.getId(), provider.getName(), new Date(formatter.parse(provider.getRegistryDate()).getTime()));
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        CommodityDJO[] commoditiesList = gson.fromJson(getResource(apiUri + "commodities"), CommodityDJO[].class);
+        for (CommodityDJO commodity : commoditiesList) {
+            try {
+                addCommodity(commodity.getId(), commodity.getName(), commodity.getProviderId(), commodity.getPrice(), commodity.getInStock());
+            }
+            catch (Exception e) {
+
+            }
+        }
+
+
+        CommentDJO[] commentsList = gson.fromJson(getResource(apiUri + "comments"), CommentDJO[].class);
+        for (int i = 0; i < commentsList.length; i++) {
+            try {
+
+                commentsList[i].setCommentId(i + 1L);
+                commentsList[i].setUsername(getUsernameFromEmail(commentsList[i].getUserEmail()));
+                addComment(commentsList[i].getCommentId(),
+                        commentsList[i].getUsername(),
+                        commentsList[i].getCommodityId(),
+                        new Date(formatter.parse(commentsList[i].getDate()).getTime()),
+                        commentsList[i].getText());
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        DiscountDJO[] discounts = gson.fromJson(getResource(apiUri + "discount"), DiscountDJO[].class);
+        for (DiscountDJO discount : discounts) {
+            try {
+                addDiscount(discount.getDiscountCode(), discount.getDiscount());
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+    }
+
+    public void addComment(long commentId, @NotNull String username, long commodityId, @NotNull Date date, @NotNull String commentText) throws InvalidIdException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
+
+        User user = getUser(username, entityManager);
+        Commodity commodity = getCommodity(commodityId, entityManager);
+        entityManager.persist(new Comment(commentId, user, commodity, commentText, date));
+
+        entityManager.getTransaction().commit();
     }
 
     @Override
@@ -41,7 +150,7 @@ public class Repository implements IRepository {
 
         User user = getUser(username, entityManager);
         Commodity commodity = getCommodity(commodityId, entityManager);
-        entityManager.persist(new Comment(user, commodity, commentText, Timestamp.valueOf(LocalDateTime.now())));
+        entityManager.persist(new Comment(user, commodity, commentText, new Date(System.currentTimeMillis())));
 
         entityManager.getTransaction().commit();
     }
@@ -49,7 +158,7 @@ public class Repository implements IRepository {
     @Override
     public void addUser(String username, String password, String email, Date birthDate, String address, long credit) throws InvalidIdException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-       entityManager.getTransaction().begin();
+        entityManager.getTransaction().begin();
 
         try {
             User user = new User(username, password, email, birthDate, address, credit);
@@ -70,11 +179,11 @@ public class Repository implements IRepository {
 
 
     @Override
-    public void addProvider(@NotNull String name, long providerId) throws InvalidIdException {
+    public void addProvider(long providerId, @NotNull String name, Date registryDate) throws InvalidIdException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        Provider provider = new Provider(name, Date.valueOf(LocalDate.now()));
+        Provider provider = new Provider(name, registryDate);
         provider.setProviderId(providerId);
         entityManager.persist(provider);
 
@@ -609,6 +718,15 @@ public class Repository implements IRepository {
             throw new InvalidIdException("Invalid comment Id");
         }
         return comment;
+    }
+
+    @NotNull
+    private String getUsernameFromEmail(@NotNull String email) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+
+        return (String) entityManager.createQuery("select u.username from User u where u.email=:email")
+                .setParameter("email", email)
+                .getSingleResult();
     }
 
 }

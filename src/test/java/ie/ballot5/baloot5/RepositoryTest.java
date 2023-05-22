@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.lang.annotation.RetentionPolicy;
 import java.sql.Date;
+import java.text.ParseException;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +23,7 @@ class RepositoryTest {
 	IRepository repository;
 
 	@BeforeEach
-	void setUp() {
+	void setUp() throws ParseException {
 		repository = new Repository();
 	}
 
@@ -43,7 +44,7 @@ class RepositoryTest {
 
 	@Test
 	void testAddProvider() {
-		repository.addProvider("Provider 1", 1);
+		repository.addProvider(1, "provider 1", Date.valueOf(LocalDate.now()));
 	}
 
 	@Test

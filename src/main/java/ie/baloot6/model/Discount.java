@@ -10,10 +10,8 @@ public class Discount {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long discountId;
 
-    @SerializedName("discountCode")
     private String discountCode;
 
-    @SerializedName("discount")
     private int discountAmount;
 
     public Discount(String discountCode, int discountAmount) {

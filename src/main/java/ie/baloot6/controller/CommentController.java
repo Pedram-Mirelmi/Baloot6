@@ -70,20 +70,19 @@ public class CommentController {
 
     @PostMapping("/api/commentsVotes")
     public Map<String, Object> rateComment(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, InvalidValueException {
-//        if(sessionManager.isValidToken(authToken)) {
-//            try {
-//                User user = sessionManager.getUser(authToken).get();
-//                Comment comment = repository.getComment(body.get(COMMENT_ID)).get();
-//                repository.addVote(user.getUsername(), comment.getCommentId(), (int)body.get(VOTE).longValue());
-//                return Map.of(STATUS, SUCCESS,
-//                        LIKES, comment.getLikes(),
-//                        DISLIKES, comment.getDislikes());
-//            }
-//            catch (NoSuchElementException e) {
-//                throw new InvalidRequestParamsException("Invalid comment Id");
-//            }
-//        }
-//        throw new InvalidValueException("Authentication token not valid");
-        return null; // TODO
+        if(sessionManager.isValidToken(authToken)) {
+            try {
+                User user = sessionManager.getUser(authToken).get();
+                Comment comment = repository.getComment(body.get(COMMENT_ID)).get();
+                repository.addVote(user.getUsername(), comment.getCommentId(), (int)body.get(VOTE).longValue());
+                return Map.of(STATUS, SUCCESS,
+                        LIKES, repository.getLikes(comment.getCommentId()),
+                        DISLIKES, repository.getDislikes(comment.getCommentId()));
+            }
+            catch (NoSuchElementException e) {
+                throw new InvalidRequestParamsException("Invalid comment Id");
+            }
+        }
+        throw new InvalidValueException("Authentication token not valid");
     }
 }

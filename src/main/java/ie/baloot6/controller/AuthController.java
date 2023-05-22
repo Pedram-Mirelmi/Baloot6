@@ -25,7 +25,7 @@ public class AuthController {
     public AuthController(IRepository repository, ISessionManager sessionManager) throws NoSuchAlgorithmException {
         this.repository = repository;
         this.sessionManager = sessionManager;
-        sessionManager.addSession("amir", "1234");
+//        sessionManager.addSession("amir", "1234");
     }
 
     @GetMapping("/api/logout")

@@ -12,16 +12,13 @@ import java.util.Set;
 public class Provider {
 
     @Id
-    @SerializedName("id")
     private long providerId;
 
 
     @Column(nullable = false)
-    @SerializedName("name")
     private String name;
 
     @Column(nullable = false)
-    @SerializedName("registryDate")
     private Date registryDate;
 
     @OneToMany(fetch = FetchType.LAZY)

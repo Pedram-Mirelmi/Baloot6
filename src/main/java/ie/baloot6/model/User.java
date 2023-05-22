@@ -17,27 +17,21 @@ public class User {
     private long userId;
 
     @Column(unique = true, nullable = false)
-    @SerializedName("username")
     private String username;
 
     @Column(nullable = false)
-    @SerializedName("password")
     private String password;
 
     @Column(nullable = false)
-    @SerializedName("email")
     private String email;
 
     @Column(nullable = false)
-    @SerializedName("birthDate")
     private Date birthDate;
 
     @Column(nullable = false)
-    @SerializedName("address")
     private String address;
 
     @Column(nullable = false)
-    @SerializedName("credit")
     private long credit;
 
 //    @ManyToMany

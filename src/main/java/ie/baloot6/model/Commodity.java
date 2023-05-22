@@ -14,11 +14,9 @@ import java.util.Set;
 public class Commodity {
 
     @Id
-    @SerializedName("id")
     private long commodityId;
 
     @Column(nullable = false)
-    @SerializedName("name")
     private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -26,11 +24,9 @@ public class Commodity {
     private Provider provider;
 
     @Column(nullable = false)
-    @SerializedName("price")
     private long price;
 
     @Column(nullable = false)
-    @SerializedName("inStock")
     private long inStock;
 
     @ManyToMany(fetch = FetchType.EAGER)

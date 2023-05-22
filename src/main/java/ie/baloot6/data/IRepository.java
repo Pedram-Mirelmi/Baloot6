@@ -7,12 +7,13 @@ import ie.baloot6.model.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Date;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
 
 public interface IRepository {
-    void getData(@NotNull String apiUri) throws InvalidIdException;
+    void getData(@NotNull String apiUri) throws InvalidIdException, ParseException;
 
     void addComment(@NotNull String username, long commodityId, @NotNull String commentText) throws IllegalArgumentException;
 
@@ -20,7 +21,7 @@ public interface IRepository {
 
     User getUserByUsername(@NotNull String username);
 
-    void addProvider(@NotNull String name, long providerId) throws InvalidIdException;
+    void addProvider(long providerId, @NotNull String name, Date registryDate) throws InvalidIdException;
 
     Optional<Provider> getProvider(long id);
 
