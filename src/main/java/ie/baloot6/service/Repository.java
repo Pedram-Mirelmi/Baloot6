@@ -507,11 +507,13 @@ public class Repository implements IRepository {
 
         User user = getUser(username, entityManager);
 
-        return Optional.ofNullable((Double) entityManager.createQuery("select r.rating from Rating r " +
-                                                                        "where r.commodity.commodityId=:commodityId and user.userId=:userId")
+        var resultList =  entityManager.createQuery("select r.rating from Rating r " +
+                "where r.commodity.commodityId=:commodityId and user.userId=:userId")
                 .setParameter("commodityId", commodityId)
                 .setParameter("userId", user.getUserId())
-                .getSingleResult());
+                .getResultList();
+
+        return resultList.isEmpty() || resultList.get(0) == null ? Optional.empty() : Optional.of((Double) resultList.get(0));
     }
 
     @Override
