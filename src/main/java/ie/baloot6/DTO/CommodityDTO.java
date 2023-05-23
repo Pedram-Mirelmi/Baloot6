@@ -5,7 +5,7 @@ import ie.baloot6.model.Commodity;
 import java.util.List;
 
 public class CommodityDTO {
-    private long commodityId;
+    private long id;
     private String name;
     private long providerId;
     private long price;
@@ -17,7 +17,7 @@ public class CommodityDTO {
     final private String providerName;
 
     public CommodityDTO(Commodity commodity, long inCart) {
-        this.commodityId = commodity.getCommodityId();
+        this.id = commodity.getCommodityId();
         this.name = commodity.getName();
         this.providerId = commodity.getProvider().getProviderId();
         this.price = commodity.getPrice();
@@ -29,12 +29,12 @@ public class CommodityDTO {
         this.providerName = commodity.getProvider().getName();
     }
 
-    public long getCommodityId() {
-        return commodityId;
+    public long getId() {
+        return id;
     }
 
-    public void setCommodityId(long commodityId) {
-        this.commodityId = commodityId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {

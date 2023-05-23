@@ -1,16 +1,11 @@
 package ie.baloot6.DTO;
 
 import ie.baloot6.model.Comment;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 
 public class CommentDTO {
-    private Long commentId;
+    private Long id;
     private String username;
     private String userEmail;
     private Long commodityId;
@@ -22,7 +17,7 @@ public class CommentDTO {
     private final int usersVote;
 
     public CommentDTO(Comment comment, int usersVote) {
-        this.commentId = comment.getCommentId();
+        this.id = comment.getCommentId();
         this.username = comment.getUser().getUsername();
         this.userEmail = comment.getUser().getEmail();
         this.commodityId = comment.getCommodity().getCommodityId();
@@ -39,12 +34,12 @@ public class CommentDTO {
         });
     }
 
-    public Long getCommentId() {
-        return commentId;
+    public Long getId() {
+        return id;
     }
 
-    public void setCommentId(Long commentId) {
-        this.commentId = commentId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getCommodityId() {
