@@ -36,7 +36,7 @@ public class ShoppingController {
                 long commodityId = Objects.requireNonNull(body.get(COMMODITY_ID));
                 long count = Objects.requireNonNull(body.get(COUNT));
                 repository.addToBuyList(user.getUsername(), commodityId, count);
-                return Map.of(STATUS, SUCCESS, "shoppingList", repository.getShoppingList(user.getUsername()));
+                return Map.of(STATUS, SUCCESS, "count", repository.getInShoppingListCount(user.getUsername(), commodityId));
             } catch (NullPointerException e) {
                 throw new InvalidRequestParamsException("Invalid commodity id or count");
             } catch (NoSuchElementException e) {
@@ -47,14 +47,14 @@ public class ShoppingController {
     }
 
     @PostMapping("/api/shoppingList/remove")
-    public Map<String, String> removeFromShoppingList(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws NotEnoughAmountException {
+    public Map<String, Object> removeFromShoppingList(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws NotEnoughAmountException {
         if (sessionManager.isValidToken(authToken)) {
             try {
                 User user = sessionManager.getUser(authToken).get();
                 long commodityId = Objects.requireNonNull(body.get(COMMODITY_ID));
                 long count = Objects.requireNonNull(body.get(COUNT));
                 repository.removeFromBuyList(user.getUsername(), commodityId, count);
-                return Map.of(STATUS, SUCCESS);
+                return Map.of(STATUS, SUCCESS, "count", repository.getInShoppingListCount(user.getUsername(), commodityId));
             } catch (NullPointerException e) {
                 throw new InvalidRequestParamsException("Invalid commodityId or count");
             } catch (NoSuchElementException e) {
