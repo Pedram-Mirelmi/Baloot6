@@ -17,12 +17,16 @@ CREATE TABLE users
 
 );
 
+DROP TABLE IF EXISTS providers;
+
 CREATE TABLE providers
 (
     providerId          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY ,
     name                VARCHAR(255) NOT NULL ,
     registryDate        DATE NOT NULL DEFAULT(NOW())
 );
+
+DROP TABLE IF EXISTS commodities;
 
 CREATE TABLE commodities
 (
@@ -35,6 +39,7 @@ CREATE TABLE commodities
         ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS shoppingItems;
 
 CREATE TABLE shoppingItems
 (
@@ -49,6 +54,7 @@ CREATE TABLE shoppingItems
         ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS categories;
 
 CREATE TABLE categories
 (
@@ -56,10 +62,9 @@ CREATE TABLE categories
     categoryName        VARCHAR(255) UNIQUE NOT NULL
 );
 
-DROP TABLE IF EXISTS commoditiesCategories;
+DROP TABLE IF EXISTS commodities_categories;
 
-
-CREATE TABLE commoditiesCategories
+CREATE TABLE commodities_categories
 (
     commodityId         INT UNSIGNED NOT NULL ,
     categoryId          INT UNSIGNED NOT NULL ,
@@ -122,6 +127,8 @@ CREATE TABLE commentsVotes
     FOREIGN KEY (commentId) REFERENCES comments(commentId)
         ON DELETE CASCADE
 );
+
+DROP TABLE IF EXISTS discountUses;
 
 CREATE TABLE discountUses
 (

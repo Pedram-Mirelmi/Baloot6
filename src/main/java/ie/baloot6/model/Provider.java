@@ -4,7 +4,7 @@ package ie.baloot6.model;
 import com.google.gson.annotations.SerializedName;
 import jakarta.persistence.*;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,8 +13,8 @@ import java.util.Set;
 public class Provider {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long providerId;
-
 
     @Column(nullable = false)
     private String name;

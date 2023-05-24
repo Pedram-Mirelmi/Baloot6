@@ -88,7 +88,7 @@ public class CommodityController {
     public List<CommodityDTO> getRecommended(@RequestHeader(AUTH_TOKEN) String authToken,
                                              @RequestParam(COMMODITY_ID) long commodityId) {
         if (sessionManager.isValidToken(authToken)) {
-            try {
+//            try {
                 User user = sessionManager.getUser(authToken).get();
 //                var recommendeds = repository.getRecommendedCommodities(user.getUsername(), commodityId);
                 return repository.getRecommendedCommodities(user.getUsername(), commodityId).stream().map(
@@ -96,9 +96,9 @@ public class CommodityController {
                                 repository.getCommodityRateCount(commodity.getCommodityId()))
 
                 ).toList();
-            } catch (NoSuchElementException | InvalidIdException e) {
-                throw new InvalidValueException("Authentication token not valid");
-            }
+//            } catch (NoSuchElementException | InvalidIdException e) {
+//                throw new InvalidValueException("Authentication token not valid");
+//            }
         }
         throw new InvalidValueException("Authentication token not valid");
     }

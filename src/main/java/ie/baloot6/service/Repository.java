@@ -21,6 +21,7 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class Repository implements IRepository {
@@ -85,8 +86,7 @@ public class Repository implements IRepository {
 
             try {
                 addProvider(provider.getId(), provider.getName(), new Date(formatter.parse(provider.getRegistryDate()).getTime()));
-            }
-            catch (Exception e)  {
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -95,8 +95,10 @@ public class Repository implements IRepository {
         for (CommodityDJO commodity : commoditiesList) {
             try {
                 addCommodity(commodity.getId(), commodity.getName(), commodity.getProviderId(), commodity.getPrice(), commodity.getInStock(), commodity.getCategories());
-            }
-            catch (Exception e) {
+                for (var category : commodity.getCategories()) {
+
+                }
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -113,8 +115,7 @@ public class Repository implements IRepository {
                         commentsList[i].getCommodityId(),
                         new Date(formatter.parse(commentsList[i].getDate()).getTime()),
                         commentsList[i].getText());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -123,9 +124,7 @@ public class Repository implements IRepository {
         for (DiscountDJO discount : discounts) {
             try {
                 addDiscount(discount.getDiscountCode(), discount.getDiscount());
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -176,7 +175,6 @@ public class Repository implements IRepository {
     }
 
 
-
     @Override
     public void addProvider(long providerId, @NotNull String name, Date registryDate) throws InvalidIdException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -216,11 +214,10 @@ public class Repository implements IRepository {
         for (var categoryName : categories) {
             var categoryObj = getCategoryByName(categoryName, entityManager);
             if(categoryObj.isEmpty()) {
-                commodity.getCategorySet().add(new Category(categoryName));
+                categoryObj = Optional.of(new Category(categoryName));
             }
-            else {
-                commodity.getCategorySet().add(categoryObj.get());
-            }
+            categoryObj.get().getCommoditySet().add(commodity);
+            commodity.getCategorySet().add(categoryObj.get());
         }
 
         entityManager.persist(commodity);
@@ -272,7 +269,7 @@ public class Repository implements IRepository {
         entityManager.getTransaction().begin();
 
         Optional<Category> category = getCategoryByName(categoryName, entityManager);
-        if(category.isEmpty()) {
+        if (category.isEmpty()) {
             return new ArrayList<>();
         }
 
@@ -312,19 +309,18 @@ public class Repository implements IRepository {
         Commodity commodity = getCommodity(commodityId, entityManager);
 
         var resultList = entityManager.createQuery("select si from ShoppingItem si " +
-                "                                             where si.user.userId=:userId " +
-                "                                                  and si.beenPurchased=false " +
-                "                                                   and si.commodity.commodityId=:commodityId")
+                        "                                             where si.user.userId=:userId " +
+                        "                                                  and si.beenPurchased=false " +
+                        "                                                   and si.commodity.commodityId=:commodityId")
                 .setParameter("userId", user.getUserId())
                 .setParameter("commodityId", commodityId)
                 .getResultList();
 
         ShoppingItem shoppingItem;
-        if(resultList.isEmpty()) {
+        if (resultList.isEmpty()) {
             shoppingItem = new ShoppingItem(user, commodity, count, false);
             entityManager.persist(shoppingItem);
-        } else
-        {
+        } else {
             shoppingItem = (ShoppingItem) resultList.get(0);
             shoppingItem.setCount(shoppingItem.getCount() + count);
         }
@@ -340,20 +336,19 @@ public class Repository implements IRepository {
         Commodity commodity = getCommodity(commodityId, entityManager);
 
         var resultList = entityManager.createQuery("select si from ShoppingItem si " +
-                                                            " where si.user.userId=:userId " +
-                                                            " and si.beenPurchased=false " +
-                                                            " and si.commodity.commodityId=:commodityId")
+                        " where si.user.userId=:userId " +
+                        " and si.beenPurchased=false " +
+                        " and si.commodity.commodityId=:commodityId")
                 .setParameter("userId", user.getUserId())
                 .setParameter("commodityId", commodityId)
                 .getResultList();
 
         ShoppingItem shoppingItem;
-        if(resultList.isEmpty()) {
+        if (resultList.isEmpty()) {
             throw new NotEnoughAmountException("No shopping Item to remove from");
-        } else
-        {
+        } else {
             shoppingItem = (ShoppingItem) resultList.get(0);
-            if(shoppingItem.getCount() >= count) {
+            if (shoppingItem.getCount() >= count) {
                 shoppingItem.setCount(shoppingItem.getCount() - count);
             } else {
                 shoppingItem.setCount(0);
@@ -372,15 +367,14 @@ public class Repository implements IRepository {
         Rating rating;
 
         var resultList = entityManager.createQuery("select r from Rating r where user.userId=:userId and" +
-                                                           " commodity.commodityId=:commodityId")
+                        " commodity.commodityId=:commodityId")
                 .setParameter("userId", user.getUserId())
                 .setParameter("commodityId", commodityId)
                 .getResultList();
-        if(resultList.isEmpty()) {
+        if (resultList.isEmpty()) {
             rating = new Rating(user, commodity, rate);
             entityManager.persist(rating);
-        }
-        else {
+        } else {
             rating = (Rating) resultList.get(0);
             rating.setRating(rate);
         }
@@ -391,7 +385,7 @@ public class Repository implements IRepository {
 
     @Override
     public void addVote(@NotNull String voter, long commentId, int voteValue) throws InvalidIdException, InvalidValueException {
-        if(voteValue < -1 || 1 < voteValue) {
+        if (voteValue < -1 || 1 < voteValue) {
             throw new InvalidValueException("Invalid vote value");
         }
         EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -400,16 +394,15 @@ public class Repository implements IRepository {
         Comment comment = getComment(commentId, entityManager);
 
         var resultList = entityManager.createQuery("select v from Vote v where v.user.userId=:userId and" +
-                                                      " v.comment.commentId=:commentId")
+                        " v.comment.commentId=:commentId")
                 .setParameter("userId", user.getUserId())
                 .setParameter("commentId", commentId)
                 .getResultList();
         Vote vote;
-        if(resultList.isEmpty()) {
+        if (resultList.isEmpty()) {
             vote = new Vote(comment, user, voteValue);
             entityManager.persist(vote);
-        }
-        else {
+        } else {
             vote = (Vote) resultList.get(0);
             vote.setVote(voteValue);
         }
@@ -421,7 +414,7 @@ public class Repository implements IRepository {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         var resultList = entityManager.createQuery("select sum(v.vote) from Vote v" +
-                " where v.comment.commentId=:commentId and v.vote=1")
+                        " where v.comment.commentId=:commentId and v.vote=1")
                 .setParameter("commentId", commentId)
                 .getResultList();
         return resultList.isEmpty() || resultList.get(0) == null ? 0 : (Long) resultList.get(0);
@@ -432,7 +425,7 @@ public class Repository implements IRepository {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         var resultList = entityManager.createQuery("select sum(v.vote) from Vote v" +
-                                                                                " where v.comment.commentId=:commentId and v.vote=-1")
+                        " where v.comment.commentId=:commentId and v.vote=-1")
                 .setParameter("commentId", commentId)
                 .getResultList();
         return resultList.isEmpty() || resultList.get(0) == null ? 0 : (Long) resultList.get(0);
@@ -462,28 +455,27 @@ public class Repository implements IRepository {
         entityManager.getTransaction().begin();
 
         User user = getUser(username, entityManager);
-        var shoppingItems = (List<ShoppingItem>)entityManager.createQuery("select si from ShoppingItem si " +
-                                                                            "where user.userId=:userId and si.beenPurchased=false ")
+        var shoppingItems = (List<ShoppingItem>) entityManager.createQuery("select si from ShoppingItem si " +
+                        "where user.userId=:userId and si.beenPurchased=false ")
                 .setParameter("userId", user.getUserId())
                 .getResultList();
 
         long price = 0;
-        for(var shoppingItem : shoppingItems) {
+        for (var shoppingItem : shoppingItems) {
             price += shoppingItem.getCommodity().getPrice() * shoppingItem.getCount();
-            if(shoppingItem.getCommodity().getInStock() < shoppingItem.getCount()) {
+            if (shoppingItem.getCommodity().getInStock() < shoppingItem.getCount()) {
                 entityManager.getTransaction().rollback();
                 throw new NotEnoughAmountException("Not enough in stock");
             }
         }
-        price = (long)(price * discount);
+        price = (long) (price * discount);
 
-        if(price > user.getCredit()) {
+        if (price > user.getCredit()) {
             entityManager.getTransaction().rollback();
             throw new NotEnoughAmountException("Not enough credit");
-        }
-        else {
+        } else {
             user.setCredit(user.getCredit() - price);
-            for(var shoppingItem : shoppingItems) {
+            for (var shoppingItem : shoppingItems) {
                 shoppingItem.setBeenPurchased(true);
                 shoppingItem.getCommodity().subtractStock(shoppingItem.getCount());
             }
@@ -496,7 +488,7 @@ public class Repository implements IRepository {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         return Optional.ofNullable((Double) entityManager.createQuery("select avg(r.rating) from Rating r " +
-                "where r.commodity.commodityId=:commodityId")
+                        "where r.commodity.commodityId=:commodityId")
                 .setParameter("commodityId", commodityId)
                 .getSingleResult());
     }
@@ -507,8 +499,8 @@ public class Repository implements IRepository {
 
         User user = getUser(username, entityManager);
 
-        var resultList =  entityManager.createQuery("select r.rating from Rating r " +
-                "where r.commodity.commodityId=:commodityId and user.userId=:userId")
+        var resultList = entityManager.createQuery("select r.rating from Rating r " +
+                        "where r.commodity.commodityId=:commodityId and user.userId=:userId")
                 .setParameter("commodityId", commodityId)
                 .setParameter("userId", user.getUserId())
                 .getResultList();
@@ -523,9 +515,9 @@ public class Repository implements IRepository {
         User user = getUser(username, entityManager);
 
         return (Long) entityManager.createQuery(
-                "select sum (si.count * si.commodity.price) " +
-                    "from ShoppingItem si " +
-                        "where si.user.userId=:userId and si.beenPurchased=false ")
+                        "select sum (si.count * si.commodity.price) " +
+                                "from ShoppingItem si " +
+                                "where si.user.userId=:userId and si.beenPurchased=false ")
                 .setParameter("userId", user.getUserId())
                 .getSingleResult();
     }
@@ -537,7 +529,7 @@ public class Repository implements IRepository {
         User user = getUser(username, entityManager);
 
         return entityManager.createQuery(
-                "select si from ShoppingItem si where si.user.userId=:userId and si.beenPurchased=false")
+                        "select si from ShoppingItem si where si.user.userId=:userId and si.beenPurchased=false")
                 .setParameter("userId", user.getUserId())
                 .getResultList();
     }
@@ -549,7 +541,7 @@ public class Repository implements IRepository {
         User user = getUser(username, entityManager);
 
         var resultList = entityManager.createQuery(
-                "select distinct(si.commodity.commodityId) from ShoppingItem si where si.user.userId=:userId and si.beenPurchased=false ")
+                        "select distinct(si.commodity.commodityId) from ShoppingItem si where si.user.userId=:userId and si.beenPurchased=false ")
                 .setParameter("userId", user.getUserId())
                 .getResultList();
         return resultList.isEmpty() || resultList.get(0) == null ? 0 : (Long) resultList.get(0);
@@ -562,7 +554,7 @@ public class Repository implements IRepository {
         User user = getUser(username, entityManager);
 
         return entityManager.createQuery(
-                "select si from ShoppingItem si where si.user.userId=:userId and si.beenPurchased=true")
+                        "select si from ShoppingItem si where si.user.userId=:userId and si.beenPurchased=true")
                 .setParameter("userId", user.getUserId())
                 .getResultList();
     }
@@ -585,11 +577,11 @@ public class Repository implements IRepository {
         Discount discount = getDiscount(discountCode, entityManager);
 
         return !entityManager.createNativeQuery(
-                "select * from discountUses " +
-                        "where discountId = :discountId and userId = :userId")
-                    .setParameter("discountId", discount.getDiscountId())
-                    .setParameter("userId", user.getUserId())
-                    .getResultList().isEmpty();
+                        "select * from discountUses " +
+                                "where discountId = :discountId and userId = :userId")
+                .setParameter("discountId", discount.getDiscountId())
+                .setParameter("userId", user.getUserId())
+                .getResultList().isEmpty();
 
 
     }
@@ -601,15 +593,16 @@ public class Repository implements IRepository {
         HashMap<Long, Double> scores = new HashMap<>();
         Commodity commodity = getCommodity(commodityId, entityManager);
 
-        var commodities = (List<Commodity>)entityManager.createQuery("select c from Commodity c").getResultList();
+        var commodities = (List<Commodity>) entityManager.createQuery("select c from Commodity c").getResultList();
 
-        commodities.forEach( c -> {
+        commodities.forEach(c -> {
             var commonCategories = new HashSet<>(commodity.getCategorySet());
             commonCategories.addAll(c.getCategorySet());
-            scores.put(c.getCommodityId(), 11 * commonCategories.size() + getUserRating(username, c.getCommodityId()).get());
+            // todo fix rating
+            scores.put(c.getCommodityId(), 11.0 * commonCategories.size());//getUserRating(username, c.getCommodityId()).orElse(null));
         });
         scores.remove(commodityId);
-        return scores.entrySet().stream().sorted(Map.Entry.comparingByKey()).map(
+        return scores.entrySet().stream().sorted(Map.Entry.comparingByValue()).map(
                 cid -> getCommodity(cid.getKey(), entityManager)
         ).toList().subList(0, 5);
 
@@ -627,7 +620,7 @@ public class Repository implements IRepository {
 
         try {
             User user = getUser(username, entityManager);
-            if(user.getPassword().equals(password)) {
+            if (user.getPassword().equals(password)) {
                 return true;
             }
         } catch (Exception e) {
@@ -641,8 +634,8 @@ public class Repository implements IRepository {
     public long getCommodityRateCount(long commodityId) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         return (Long) entityManager.createQuery(
-                "select count (*) from Rating r " +
-                    "where r.commodity.commodityId=:commodityId")
+                        "select count (*) from Rating r " +
+                                "where r.commodity.commodityId=:commodityId")
                 .setParameter("commodityId", commodityId)
                 .getSingleResult();
     }
@@ -653,9 +646,9 @@ public class Repository implements IRepository {
 
         User user = getUser(username, entityManager);
 
-        var resultList =  entityManager.createQuery(
-                    "select v.vote from Vote v " +
-                    "where v.user.userId=:userId")
+        var resultList = entityManager.createQuery(
+                        "select v.vote from Vote v " +
+                                "where v.user.userId=:userId")
                 .setParameter("userId", user.getUserId())
                 .getResultList();
 
@@ -686,8 +679,8 @@ public class Repository implements IRepository {
     private User getUser(@NotNull String username, EntityManager entityManager) throws InvalidIdException {
         List users = entityManager.createQuery("SELECT u FROM User u where u.username=:username")
                 .setParameter("username", username).getResultList();
-        if(users.isEmpty()) {
-            if(entityManager.getTransaction().isActive()) {
+        if (users.isEmpty()) {
+            if (entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().rollback();
             }
             throw new InvalidIdException("Invalid user id");
@@ -698,8 +691,8 @@ public class Repository implements IRepository {
     @NotNull
     public Commodity getCommodity(long commodityId, EntityManager entityManager) throws InvalidIdException {
         Commodity commodity = entityManager.find(Commodity.class, commodityId);
-        if(commodity == null) {
-            if(entityManager.getTransaction().isActive()) {
+        if (commodity == null) {
+            if (entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().rollback();
             }
             throw new InvalidIdException("Invalid commodity Id");
@@ -714,7 +707,7 @@ public class Repository implements IRepository {
         var resultList = entityManager.createQuery("select d from Discount d where d.discountCode=:discountCode")
                 .setParameter("discountCode", discountCode)
                 .getResultList();
-        if(resultList.isEmpty()) {
+        if (resultList.isEmpty()) {
             throw new InvalidIdException("Invalid discount code");
         }
 
@@ -726,8 +719,8 @@ public class Repository implements IRepository {
     @NotNull
     private Comment getComment(long commentId, EntityManager entityManager) throws InvalidIdException {
         Comment comment = entityManager.find(Comment.class, commentId);
-        if(comment == null) {
-            if(entityManager.getTransaction().isActive()) {
+        if (comment == null) {
+            if (entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().rollback();
             }
             throw new InvalidIdException("Invalid comment Id");

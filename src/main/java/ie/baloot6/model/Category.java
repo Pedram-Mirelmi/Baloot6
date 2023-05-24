@@ -17,10 +17,11 @@ public class Category {
     @Column(nullable = false)
     private String categoryName;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-    @JoinTable(name = "commoditiesCategories",
-                joinColumns = {@JoinColumn(name = "categoryId")},
-                inverseJoinColumns = {@JoinColumn(name = "commodityId")})
+    public void setCommoditySet(Set<Commodity> commoditySet) {
+        this.commoditySet = commoditySet;
+    }
+
+    @ManyToMany(mappedBy = "categorySet")
     private Set<Commodity> commoditySet = new HashSet<>();
 
 

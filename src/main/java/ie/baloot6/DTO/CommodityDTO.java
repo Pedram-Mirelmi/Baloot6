@@ -1,5 +1,6 @@
 package ie.baloot6.DTO;
 
+import ie.baloot6.model.Category;
 import ie.baloot6.model.Commodity;
 
 import java.util.List;
@@ -21,11 +22,11 @@ public class CommodityDTO {
         this.name = commodity.getName();
         this.providerId = commodity.getProvider().getProviderId();
         this.price = commodity.getPrice();
-        commodity.getCategorySet().forEach(c -> categories.add(c.getCategoryName()));
+        this.setCategories(commodity.getCategorySet().stream().map(Category::getCategoryName).toList());
         this.inStock = commodity.getInStock();
         this.inCart = inCart;
-        rateCount = commodity.getRatings().size();
-        commodity.getRatings().forEach(r -> rating += r.getRating()/rateCount);
+        this.rateCount = commodity.getRatings().size();
+        commodity.getRatings().forEach(r -> this.rating += r.getRating()/rateCount);
         this.providerName = commodity.getProvider().getName();
     }
 

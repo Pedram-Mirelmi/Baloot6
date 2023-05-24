@@ -14,6 +14,7 @@ import java.util.Set;
 public class Commodity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long commodityId;
 
     @Column(nullable = false)
@@ -29,15 +30,16 @@ public class Commodity {
     @Column(nullable = false)
     private long inStock;
 
-    @ManyToMany(mappedBy = "commoditySet", fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-//    @JoinTable(name = "commoditiesCategories",
-//                joinColumns = @JoinColumn(name = "commodityId"),
-//                inverseJoinColumns = @JoinColumn(name = "categoryId"))
-    Set<Category> categorySet = new HashSet<>();;
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            joinColumns = { @JoinColumn(name = "commodityId") },
+            inverseJoinColumns = { @JoinColumn(name = "categoryId") }
+    )
+    Set<Category> categorySet = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinColumn(name = "commodityId")
-    private Set<Rating> ratings = new HashSet<>();;
+    private Set<Rating> ratings = new HashSet<>();
 
 
     public Commodity(String name, Provider provider, long price, long inStock) {
@@ -47,11 +49,11 @@ public class Commodity {
         this.inStock = inStock;
     }
 
-    public Commodity(Commodity commodity) {
-        this(commodity.name, commodity.getProvider(), commodity.price, commodity.getInStock());
-        this.commodityId = commodity.getCommodityId();
-        categorySet = commodity.getCategorySet();
-    }
+//    public Commodity(Commodity commodity) {
+//        this(commodity.name, commodity.getProvider(), commodity.price, commodity.getInStock());
+//        this.commodityId = commodity.getCommodityId();
+//        categorySet = commodity.getCategorySet();
+//    }
 
     public Set<Category> getCategorySet() {
         return categorySet;
@@ -118,6 +120,10 @@ public class Commodity {
 
     public void setRatings(Set<Rating> ratings) {
         this.ratings = ratings;
+    }
+
+    public void setCategorySet(Set<Category> categorySet) {
+        this.categorySet = categorySet;
     }
 
     @Override
