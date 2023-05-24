@@ -383,7 +383,7 @@ public class Repository implements IRepository {
         }
 
         entityManager.getTransaction().commit();
-        return getUserRating(username, commodityId).get();
+        return getCommodityRating(commodityId).get();
     }
 
     @Override
