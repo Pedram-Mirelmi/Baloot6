@@ -81,10 +81,14 @@ public class ShoppingController {
     }
 
     @GetMapping("/api/purchasedList")
-    public List<ShoppingItem> getPurchasedList(@RequestHeader(AUTH_TOKEN) String authToken) throws InvalidIdException {
+    public List<CommodityDTO> getPurchasedList(@RequestHeader(AUTH_TOKEN) String authToken) throws InvalidIdException {
         if (sessionManager.isValidToken(authToken)) {
             try {
-                return repository.getPurchasedList(sessionManager.getUser(authToken).get().getUsername());
+                var username = sessionManager.getUser(authToken).get().getUsername();
+                return repository.getPurchasedList(username).stream().map(
+                        si -> new CommodityDTO(si.getCommodity(),
+                                repository.getInPurchasedListCount(username, si.getCommodity().getCommodityId()))
+                ).toList();
             } catch (NoSuchElementException e) {
                 throw new InvalidValueException("Authentication token invalid");
             }

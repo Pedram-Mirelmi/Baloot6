@@ -54,11 +54,11 @@ public class CommentController {
     }
 
     @PostMapping("/api/comments")
-    public Map<String, String> addComment(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Comment comment) throws InvalidValueException{
+    public Map<String, String> addComment(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Object> body) throws InvalidValueException{
         if(sessionManager.isValidToken(authToken)) {
             try {
                 User user = sessionManager.getUser(authToken).get();
-                repository.addComment(user.getUsername(), comment.getCommodity().getCommodityId(), comment.getText());
+                repository.addComment(user.getUsername(), (int) body.get("commodityId"), (String) body.get("text"));
                 return Map.of(STATUS, SUCCESS);
             } catch (NoSuchElementException e) {
                 sessionManager.removeSession(authToken);

@@ -26,11 +26,15 @@ public class CommodityDTO {
         this.inStock = commodity.getInStock();
         this.inCart = inCart;
         this.rateCount = commodity.getRatings().size();
-        commodity.getRatings().forEach(r -> this.rating += r.getRating()/rateCount);
+        commodity.getRatings().forEach(r -> this.rating += r.getRating() / rateCount);
         this.providerName = commodity.getProvider().getName();
     }
 
     public long getId() {
+        return id;
+    }
+
+    public long getCommodityId() {
         return id;
     }
 
@@ -39,6 +43,9 @@ public class CommodityDTO {
     }
 
     public String getName() {
+        return name;
+    }
+    public String getCommodityName() {
         return name;
     }
 
@@ -87,6 +94,10 @@ public class CommodityDTO {
     }
 
     public long getInCart() {
+        return inCart;
+    }
+
+    public long getCount() {
         return inCart;
     }
 

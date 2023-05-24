@@ -31,7 +31,10 @@ public class Repository implements IRepository {
         var registry = new StandardServiceRegistryBuilder().configure().build();
 //        entityManagerFactory = Persistence.createEntityManagerFactory("default");
         entityManagerFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
-        getData("http://5.253.25.110:5000/api/");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        long commodityCount = (long) entityManager.createQuery("SELECT count(c) from Commodity c").getSingleResult();
+        if (commodityCount == 0)
+            getData("http://5.253.25.110:5000/api/");
     }
 
     private String getResource(@NotNull String uri) {
@@ -80,6 +83,7 @@ public class Repository implements IRepository {
                 System.out.println(e.getMessage());
             }
         }
+
         ProviderDJO[] providersList = gson.fromJson(getResource(apiUri + "providers"), ProviderDJO[].class);
         for (ProviderDJO provider : providersList) {
 
@@ -542,8 +546,21 @@ public class Repository implements IRepository {
         User user = getUser(username, entityManager);
 
         var resultList = entityManager.createQuery(
-                        "select distinct(si.commodity.commodityId) from ShoppingItem si where si.user.userId=:userId and si.beenPurchased=false ")
+                        "select si.count from ShoppingItem si where si.user.userId=:userId and si.commodity.commodityId=:commodityId and si.beenPurchased=false ")
                 .setParameter("userId", user.getUserId())
+                .setParameter("commodityId", commodityId)
+                .getResultList();
+        return resultList.isEmpty() || resultList.get(0) == null ? 0 : (Long) resultList.get(0);
+    }  @Override
+    public long getInPurchasedListCount(String username, long commodityId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+
+        User user = getUser(username, entityManager);
+
+        var resultList = entityManager.createQuery(
+                        "select si.count from ShoppingItem si where si.user.userId=:userId and si.commodity.commodityId=:commodityId and si.beenPurchased=true ")
+                .setParameter("userId", user.getUserId())
+                .setParameter("commodityId", commodityId)
                 .getResultList();
         return resultList.isEmpty() || resultList.get(0) == null ? 0 : (Long) resultList.get(0);
     }

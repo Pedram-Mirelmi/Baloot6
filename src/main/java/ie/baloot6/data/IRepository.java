@@ -69,6 +69,7 @@ public interface IRepository {
     List<Commodity> getShoppingList(String username) throws InvalidIdException;
 
     long getInShoppingListCount(String username, long commodityId);
+    long getInPurchasedListCount(String username, long commodityId);
 
     List<ShoppingItem> getPurchasedList(String username) throws InvalidIdException;
 
