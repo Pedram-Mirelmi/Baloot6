@@ -2,6 +2,7 @@ package ie.baloot6.service;
 
 import com.google.gson.Gson;
 import ie.baloot6.DJO.*;
+import ie.baloot6.DTO.CommodityDTO;
 import ie.baloot6.data.IRepository;
 import ie.baloot6.data.StaticData;
 import ie.baloot6.exception.InvalidIdException;
@@ -11,7 +12,6 @@ import ie.baloot6.model.*;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +21,6 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class Repository implements IRepository {
@@ -213,7 +212,7 @@ public class Repository implements IRepository {
 
         for (var categoryName : categories) {
             var categoryObj = getCategoryByName(categoryName, entityManager);
-            if(categoryObj.isEmpty()) {
+            if (categoryObj.isEmpty()) {
                 categoryObj = Optional.of(new Category(categoryName));
             }
             categoryObj.get().getCommoditySet().add(commodity);
@@ -523,15 +522,17 @@ public class Repository implements IRepository {
     }
 
     @Override
-    public List<ShoppingItem> getShoppingList(String username) throws InvalidIdException {
+    public List<Commodity> getShoppingList(String username) throws InvalidIdException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         User user = getUser(username, entityManager);
 
-        return entityManager.createQuery(
+        List<Commodity> result = entityManager.createQuery(
                         "select si from ShoppingItem si where si.user.userId=:userId and si.beenPurchased=false")
                 .setParameter("userId", user.getUserId())
-                .getResultList();
+                .getResultStream().map(si -> ((ShoppingItem) si).getCommodity()).toList();
+
+        return result;
     }
 
     @Override

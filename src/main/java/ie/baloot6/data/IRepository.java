@@ -1,5 +1,6 @@
 package ie.baloot6.data;
 
+import ie.baloot6.DTO.CommodityDTO;
 import ie.baloot6.exception.InvalidIdException;
 import ie.baloot6.exception.InvalidValueException;
 import ie.baloot6.exception.NotEnoughAmountException;
@@ -65,7 +66,7 @@ public interface IRepository {
 
     long calculateTotalBuyListPrice(String username) throws InvalidIdException;
 
-    List<ShoppingItem> getShoppingList(String username) throws InvalidIdException;
+    List<Commodity> getShoppingList(String username) throws InvalidIdException;
 
     long getInShoppingListCount(String username, long commodityId);
 
