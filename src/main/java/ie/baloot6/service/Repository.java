@@ -551,7 +551,9 @@ public class Repository implements IRepository {
                 .setParameter("commodityId", commodityId)
                 .getResultList();
         return resultList.isEmpty() || resultList.get(0) == null ? 0 : (Long) resultList.get(0);
-    }  @Override
+    }
+
+    @Override
     public long getInPurchasedListCount(String username, long commodityId) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
@@ -666,8 +668,10 @@ public class Repository implements IRepository {
 
         var resultList = entityManager.createQuery(
                         "select v.vote from Vote v " +
-                                "where v.user.userId=:userId")
+                                "where v.user.userId=:userId " +
+                                "and v.comment.commentId=:commentId")
                 .setParameter("userId", user.getUserId())
+                .setParameter("commentId", commentId)
                 .getResultList();
 
         return resultList.isEmpty() ? 0 : (Integer) resultList.get(0);

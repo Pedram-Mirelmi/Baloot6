@@ -25,16 +25,20 @@ public class CommentDTO {
         this.date = comment.getDate();
         this.usersVote = usersVote;
         comment.getVotes().forEach(v -> {
-            if(v.getVote() == 1) {
+            if (v.getVote() == 1) {
                 likes++;
             }
-            if(v.getVote() == -1) {
+            if (v.getVote() == -1) {
                 dislikes++;
             }
         });
     }
 
     public Long getId() {
+        return id;
+    }
+
+    public Long getCommentId() {
         return id;
     }
 
